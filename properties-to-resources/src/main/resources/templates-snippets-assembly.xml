@@ -1,0 +1,21 @@
+<assembly>
+  <id>templates-snippets</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/resources/templates/openshift</directory>
+      <outputDirectory>openshift</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources/templates/openshift</directory>
+      <outputDirectory>snippets_maven_openshift</outputDirectory>
+    </fileSet>
+     <fileSet>
+      <directory>src/test/resources/openshift/example-config</directory>
+      <outputDirectory>example-config</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    description: ${deployment.description}
+  name: ${deployment.name}
+  namespace: ${deployment.namespace}
+spec:
+  ports:
+  - name: web
+    port: 80
+    protocol: TCP
+    targetPort: ${deployment.targetPort}
+  selector:
+    app: ${deployment.name}
+  sessionAffinity: None
+<#if deployment.serviceType??>    
+  host: ${deployment.serviceType}
+<#else>    
+  type: ClusterIP
+</#if>

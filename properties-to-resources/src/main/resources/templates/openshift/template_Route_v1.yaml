@@ -1,0 +1,70 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: ${deployment.name}
+  namespace: ${deployment.namespace}
+<#if deployment.cookie?? && deployment.cookie == 'true'> 
+  annotations:
+    router.openshift.io/cookie_name: ${deployment.name}-cookie
+</#if> 
+spec:
+<#if deployment.hostPrefix??>    
+  host: ${deployment.hostPrefix}.${deployment.hostSuffix}
+<#else>    
+  host: ${deployment.name}.${deployment.hostSuffix}
+</#if> 
+<#if deployment.routePath??>  
+  path: /${deployment.routePath}
+</#if>
+  port:
+    targetPort: web
+<#if deployment.tls?? && deployment.tls == 'true'>    
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: Redirect
+<#elseif deployment.http == 'false'>   
+  tls:
+    termination: edge
+</#if> 
+  subdomain: ""
+  to:
+    kind: Service
+    name: ${deployment.name}
+    weight: 100
+  wildcardPolicy: None
+  
+<#list routes as route>
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: ${deployment.appName}-${route.path?lower_case}-${deployment.stage}
+  namespace: ${deployment.namespace}
+<#if deployment.cookie?? && deployment.cookie == 'true'> 
+  annotations:
+    router.openshift.io/cookie_name: ${deployment.name}-cookie
+</#if> 
+spec:
+<#if deployment.hostPrefix??>    
+  host: ${deployment.hostPrefix}.${deployment.hostSuffix}
+<#else>    
+  host: ${deployment.name}.${deployment.hostSuffix}
+</#if> 
+  path: /${route.path}
+  port:
+    targetPort: web
+<#if deployment.tls?? && deployment.tls == 'true'>    
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: Redirect
+<#else>    
+  tls:
+    termination: edge
+</#if> 
+  subdomain: ""
+  to:
+    kind: Service
+    name: ${deployment.name}
+    weight: 100
+  wildcardPolicy: None
+</#list>

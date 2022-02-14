@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${deployment.name}
+  namespace: ${deployment.namespace}
+spec:
+<#if deployment.minReadySeconds??> 
+  minReadySeconds: ${deployment.minReadySeconds}
+<#else>    
+  minReadySeconds: 0
+</#if>
+<#if deployment.strategyType?? && deployment.strategyType == 'RollingUpdate'> 
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: ${deployment.rollingUpdateMaxUnavailable}
+      maxSurge: ${deployment.rollingUpdateMaxSurge}
+<#elseif deployment.strategyType?? && deployment.strategyType == 'Recreate'>    
+  strategy:
+    type: Recreate
+<#else>
+  strategy:
+    type: RollingUpdate
+</#if>
+  selector:
+    matchLabels:
+      app: ${deployment.name}
+  replicas: ${deployment.replicas}
+  template:
+    metadata:
+      labels:
+        app: ${deployment.name}
+    spec:
+      imagePullSecrets:
+      - name: ${deployment.imagePullSecretName}
+      containers:
+        - name: ${deployment.name}
+          image: ${deployment.image}
+<#if deployment.configMapRef?? || deployment.secretRef??>
+          envFrom:
+</#if>
+<#if deployment.configMapRef??>
+            - configMapRef:
+                name: ${deployment.configMapRef}
+</#if>
+<#if deployment.secretRef??>
+            - secretRef:
+                name: ${deployment.secretRef}
+</#if>                
+          ports:
+           -  containerPort: ${deployment.containerPort}
+          resources:
+            limits:
+              cpu: ${deployment.limitsCpu}
+              memory: ${deployment.limitsMemory}
+            requests:
+              cpu: ${deployment.requestsCpu}
+              memory: ${deployment.requestsMemory}
+<#if deployment.readinessProbePath??>
+          readinessProbe:
+            httpGet:  
+              path: ${deployment.readinessProbePath}            
+              port: ${deployment.containerPort}
+              scheme: HTTP
+            timeoutSeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+</#if>
+       

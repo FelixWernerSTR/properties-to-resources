@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<name>properties-to-resources</name>
+	<groupId>de.svi.devops</groupId>
+	<artifactId>properties-to-resources</artifactId>
+	<version>1.1.0-SNAPSHOT</version>
+	
+	<packaging>jar</packaging>
+	
+	<properties>
+        <java.version>11</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+    </properties>
+
+	<build>
+	  <plugins>
+	       <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+	              <execution>
+	                <id>templates-openshift</id>
+	                <phase>package</phase>
+	                <goals>
+	                  <goal>single</goal>
+	                </goals>
+	                <configuration>
+	                  <outputDirectory>${project.build.directory}</outputDirectory>
+	                  <appendAssemblyId>true</appendAssemblyId>
+	                  <descriptors>
+	                    <descriptor>src/main/resources/templates-openshift-assembly.xml</descriptor>
+	                  </descriptors>
+	                </configuration>
+	              </execution>
+	              <execution>
+	                <id>templates-snippets</id>
+	                <phase>package</phase>
+	                <goals>
+	                  <goal>single</goal>
+	                </goals>
+	                <configuration>
+	                  <outputDirectory>${project.build.directory}</outputDirectory>
+	                  <appendAssemblyId>true</appendAssemblyId>
+	                  <descriptors>
+	                    <descriptor>src/main/resources/templates-snippets-assembly.xml</descriptor>
+	                  </descriptors>
+	                </configuration>
+	              </execution>
+              </executions>
+        </plugin>
+	  </plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.31</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-configuration2</artifactId>
+			<version>2.7</version>
+		</dependency>
+		
+		<dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.9.4</version>
+    </dependency>
+    
+    <dependency>
+       <groupId>org.springframework.security</groupId>
+       <artifactId>spring-security-crypto</artifactId>
+       <version>5.5.4</version>
+    </dependency>
+		
+		<dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.17.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.17.1</version>
+    </dependency>
+		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.hamcrest</groupId>
+					<artifactId>hamcrest-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>2.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.22.0</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+</project>
+  
