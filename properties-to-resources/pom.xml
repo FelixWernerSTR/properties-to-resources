@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<name>properties-to-resources</name>
-	<groupId>de.svi.devops</groupId>
+	<groupId>de.fw.devops</groupId>
 	<artifactId>properties-to-resources</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
 	

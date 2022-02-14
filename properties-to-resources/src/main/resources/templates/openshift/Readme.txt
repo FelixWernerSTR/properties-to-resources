@@ -1,6 +1,6 @@
 oc.exe oder oc executable muss im Pfad oder in PATH-Variable vorhanden sein!!!
 oc login https://api.cntr.sv.loc:6443/ --username=N0009271 --password=...
-oc project svi-ew-svis 
+oc project myapp-dev
 oc apply -f file.yaml 
 
 Reihenfolge:
@@ -9,5 +9,3 @@ Reihenfolge:
 2. Deployment
 3. Service
 4. Route
-
-ACHTUNG geht nur mit "Check Point Mobile"!

@@ -4,24 +4,10 @@
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>de.svi.devops</groupId>
-		<artifactId>SVIS3GDocker</artifactId>
-		<version>1.1.0-SNAPSHOT</version>
-	</parent>
-
 	<artifactId>[=mavenproject.name]</artifactId>
 	<packaging>jar</packaging>
 
 	<name>[=mavenproject.name]</name>
-
-	<repositories>
-		<repository>
-			<id>FinalDelivery</id>
-			<name>FinalDelivery</name>
-			<url>https://nexus.pr.sv.loc/repository/IK12_FinalDelivery/</url>
-		</repository>
-	</repositories>
 
 	<properties>
 	</properties>
@@ -140,36 +126,6 @@
 							</execution>
 						</executions>
 					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<version>${exec-maven-plugin.version}</version>
-						<executions>
-							<execution>
-								<id>replace with placeholder-replacement-config.properties</id>
-								<phase>prepare-package</phase>
-								<goals>
-									<goal>java</goal>
-								</goals>
-								<configuration>
-									<systemProperties>
-										<systemProperty>
-											<key>MAVEN_PROJECT_BASEDIR</key>
-											<value>${basedir}</value>
-										</systemProperty>
-										<systemProperty>
-											<key>forStage</key>
-											<value>${forStage}</value>
-										</systemProperty>
-									</systemProperties>
-									<mainClass>de.svi.devops.utils.ReplacePlaceholder</mainClass>
-									<arguments>
-										<argument>src/main/resources/placeholder-replacement-config.properties</argument>
-									</arguments>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -181,7 +137,7 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>de.svi.maven.plugins</groupId>
+						<groupId>de.fw.maven.plugins</groupId>
 						<artifactId>yaml-builder-maven-plugin</artifactId>
 					</plugin>
 				</plugins>
@@ -200,7 +156,7 @@
 						<version>2.25</version>
 						<configuration>
 							<tiles>
-								<tile>de.svi.devops:yaml-upload-nexus-tile:1.1.0-SNAPSHOT</tile>
+								<tile>de.fw.devops:yaml-upload-nexus-tile:1.1.0-SNAPSHOT</tile>
 							</tiles>
 						</configuration>
 					</plugin>
@@ -208,7 +164,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>yaml-execute-java</id> <!-- vorausgesetzt yaml-build wurde ausgeführt und oc.exe ist in PATH! -->
+			<id>yaml-oc-apply</id> <!-- vorausgesetzt yaml-build wurde ausgeführt und oc.exe ist in PATH! -->
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
@@ -228,11 +184,11 @@
 								<configuration>
 									<skip>${skip.chmod.on.windows}</skip>
 									<executable>chmod</executable>
-									<workingDirectory>${project.build.directory}/openshift/develop/svi-ew/[=mavenproject.name]</workingDirectory>
+									<workingDirectory>${project.build.directory}/openshift/develop/myapp-dev/[=mavenproject.name]</workingDirectory>
 									<arguments>
 										<argument>-R</argument>
 										<argument>775</argument>
-										<argument>${project.build.directory}/openshift/develop/svi-ew/[=mavenproject.name]</argument>
+										<argument>${project.build.directory}/openshift/develop/myapp-dev/[=mavenproject.name]</argument>
 									</arguments>
 								</configuration>
 							</execution>
@@ -243,12 +199,12 @@
 									<goal>java</goal>
 								</goals>
 								<configuration>
-									<mainClass>de.svi.devops.utils.openshift.OcApplyFileExecutor</mainClass>
-									<workingDirectory>${project.build.directory}/openshift/develop/svi-ew/[=mavenproject.name]</workingDirectory>
+									<mainClass>de.fw.devops.utils.openshift.OcApplyFileExecutor</mainClass>
+									<workingDirectory>${project.build.directory}/openshift/develop/myapp-dev/[=mavenproject.name]</workingDirectory>
 									<arguments>
-										<argument>${project.build.directory}/openshift/develop/svi-ew/[=mavenproject.name]/[=mavenproject.name]-applyAllScripts.${executable.extension}
+										<argument>${project.build.directory}/openshift/develop/myapp-dev/[=mavenproject.name]/[=mavenproject.name]-applyAllScripts.${executable.extension}
 										</argument>
-										<argument>${project.build.directory}/openshift/develop/svi-ew/[=mavenproject.name]</argument>
+										<argument>${project.build.directory}/openshift/develop/myapp-dev/[=mavenproject.name]</argument>
 									</arguments>
 								</configuration>
 							</execution>
@@ -261,13 +217,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>de.svi.devops</groupId>
+			<groupId>de.fw.devops</groupId>
 			<artifactId>properties-to-resources</artifactId>
-			<version>1.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>de.svi.devops</groupId>
-			<artifactId>placeholder-utils</artifactId>
 			<version>1.1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>

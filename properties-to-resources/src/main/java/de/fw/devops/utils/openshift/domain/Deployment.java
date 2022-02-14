@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * POJO für Openshift/Kubernetes-Deployment/(Deafult)Route/Service
+ * POJO für Openshift/Kubernetes-Deployment/(Default)Route/Service
  * 
  * @author Felix Werner
  *

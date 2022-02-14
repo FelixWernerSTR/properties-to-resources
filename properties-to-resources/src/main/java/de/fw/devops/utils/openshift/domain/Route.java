@@ -7,7 +7,7 @@ import java.util.List;
 import de.fw.devops.utils.PropertiesToPojosParseUtil;
 
 /**
- * POJO für zusätzliche Openshift/Kubernetes-Route's. In der Regel wenn mehrere WebAnwendunegn auf einem Tomcat über ein Deployment draufkommen und separat
+ * POJO für zusätzliche Openshift/Kubernetes-Route's. In der Regel wenn mehrere WebAnwendungen auf einem Tomcat über ein Deployment draufkommen und separat
  * erreichbar sein müssen.
  * 
  * @author Felix Werner

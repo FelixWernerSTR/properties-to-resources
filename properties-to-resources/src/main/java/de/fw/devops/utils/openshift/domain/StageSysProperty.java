@@ -9,8 +9,8 @@ import de.fw.devops.utils.PropertiesToPojosParseUtil;
 /**
  * POJO für Mapping Namespace=SysProperty. SysProperty hält PathSuffix für die generierten Artefakte.
  * 
- * Beispiel: stagesysproperty.pr.mapping=sv-pr-svis:yaml.upload.nexus.dirSuffixSV_PR stagesysproperty.ew.mapping=svi-ew-svis:yaml.upload.nexus.dirSuffixSVI_EW
- * stagesysproperty.ep.mapping=svi-ep-svis:yaml.upload.nexus.dirSuffixSVI_EP
+ * Beispiel: stagesysproperty.pr.mapping=myapp-dev:yaml.upload.nexus.dirSuffixDev stagesysproperty.dev.mapping=myapp-dev:yaml.upload.nexus.dirSuffixDev
+ * stagesysproperty.preprod.mapping=myapp-preprod:yaml.upload.nexus.dirSuffixPreProd
  * 
  * @author Felix Werner
  *
