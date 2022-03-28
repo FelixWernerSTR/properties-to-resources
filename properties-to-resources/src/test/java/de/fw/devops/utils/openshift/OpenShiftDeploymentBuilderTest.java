@@ -32,12 +32,12 @@ public class OpenShiftDeploymentBuilderTest {
                                                                             // Namespace die Artefakte nach Nexus hochzuladen
     System.setProperty("basedir", new File(".").getAbsolutePath());
     
-    OpenShiftDeploymentBuilder.fromProperties("src/test/resources/openshift/example-config/dev/myApp-dev.properties")// hier f�r ein Deployment-Model
+    OpenShiftDeploymentBuilder.fromProperties("src/test/resources/openshift/example-config/dev/myapp-dev.properties")// hier f�r ein Deployment-Model
         .templatePath("src/main/resources/templates/openshift") //
         .targetPath("target") //
         .process();
     assertThat(Files.exists(Paths.get("target/openshift/dev/myApp/myApp_Deployment_v1.yaml"))).isTrue();
-    assertThat(new String(Files.readAllBytes(Paths.get("target/openshift/dev/myApp/myApp_Deployment_v1.yaml")))).doesNotContain("${deployment.name}");
+    assertThat(new String(Files.readAllBytes(Paths.get("target/openshift/dev/myApp/myapp_Deployment_v1.yaml")))).doesNotContain("${deployment.name}");
   }
   
   /**
