@@ -169,4 +169,17 @@ public abstract class AbstractArtifactBuilder {
     return resourcePath;
   }
   
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("AbstractArtifactBuilder [propertiesPath=");
+    builder.append(propertiesPath);
+    builder.append(", templatePath=");
+    builder.append(templatePath);
+    builder.append(", targetPath=");
+    builder.append(targetPath);
+    builder.append("]");
+    return builder.toString();
+  }
+  
 }

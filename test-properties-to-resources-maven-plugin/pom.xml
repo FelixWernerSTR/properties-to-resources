@@ -1,0 +1,108 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>de.fw.devops</groupId>
+	<artifactId>test-properties-to-resources-maven-plugin</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	
+	<packaging>jar</packaging>
+
+	<name>test-properties-to-resources-maven-plugin</name>
+
+	<properties>
+		<java.version>11</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+	</properties>
+
+	<profiles>
+    <profile>
+      <id>snippet-build</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>unpack openshift templates</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>unpack</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>de.fw.devops</groupId>
+                      <artifactId>properties-to-resources</artifactId>
+                      <classifier>templates-snippets</classifier>
+                      <version>1.1.0-SNAPSHOT</version>
+                      <type>zip</type>
+                      <outputDirectory>${project.build.directory}/templates</outputDirectory>
+                  </artifactItem>
+                </artifactItems>
+                </configuration>
+               </execution>
+            </executions>
+          </plugin>
+        <plugin>
+           <groupId>de.fw.maven.plugins</groupId>
+           <artifactId>properties-to-resources-maven-plugin</artifactId>
+           <version>1.1.0-SNAPSHOT</version>
+           <executions>
+              <execution>
+                 <id>build snippets with properties-to-resources-maven-plugin</id>
+                  <goals>
+                   <goal>build</goal>
+                    </goals>
+                    <configuration>
+                       <sourceDir>src/test/resources/modeldata</sourceDir>
+                       <templateDir>${project.build.directory}/templates/snippets_maven_openshift</templateDir>
+                       <targetDir>target</targetDir>
+                    </configuration>
+                </execution>
+             </executions>
+         </plugin>
+        </plugins>
+      </build>
+    </profile>
+	</profiles>
+
+	<dependencies>
+		<dependency>
+			<groupId>de.fw.devops</groupId>
+			<artifactId>properties-to-resources</artifactId>
+			<version>1.1.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

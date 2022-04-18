@@ -14,7 +14,7 @@ spec:
   host: ${deployment.name}.${deployment.hostSuffix}
 </#if> 
 <#if deployment.routePath??>  
-  path: /${deployment.routePath}
+  path: ${deployment.routePath}
 </#if>
   port:
     targetPort: web
@@ -50,7 +50,7 @@ spec:
 <#else>    
   host: ${deployment.name}.${deployment.hostSuffix}
 </#if> 
-  path: /${route.path}
+  path: ${route.path}
   port:
     targetPort: web
 <#if deployment.tls?? && deployment.tls == 'true'>    

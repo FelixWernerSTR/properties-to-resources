@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import org.junit.Test;
 
 import de.fw.devops.utils.misc.ProjectSnippetBuilder;
+import de.fw.devops.utils.AbstractArtifactBuilder;
+import de.fw.devops.utils.PropertiesToPojosParseUtil;
 
 /**
  * 
@@ -27,10 +29,10 @@ public class ProjectSnippetBuilderTest {
     ProjectSnippetBuilder //
         .fromProperties("src/test/resources/snippets/modeldata/project.properties")// hier für ein Project-Model
         .templatePath("src/main/resources/templates/snippets_maven_openshift") //
-        .targetPath("target") //
+        .targetPath("target/1") //
         .processProperties();
     
-    assertThat(new String(Files.readAllBytes(Paths.get("target/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
+    assertThat(new String(Files.readAllBytes(Paths.get("target/1/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
   }
   
   /**
@@ -41,12 +43,29 @@ public class ProjectSnippetBuilderTest {
   public void testProcessProjectPropertiesDir() throws IOException {
     
     ProjectSnippetBuilder //
-        .fromProperties("src/test/resources/snippets/modeldata").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target") //
+        .fromProperties("src/test/resources/snippets/modeldata").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target/2") //
         .process();
     
-    assertThat(new String(Files.readAllBytes(Paths.get("target/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
-    assertThat(new String(Files.readAllBytes(Paths.get("target/snippets/myApp2/pom.xml")))).doesNotContain("[=mavenproject.name]");
+    assertThat(new String(Files.readAllBytes(Paths.get("target/2/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
+    assertThat(new String(Files.readAllBytes(Paths.get("target/2/snippets/myApp2/pom.xml")))).doesNotContain("[=mavenproject.name]");
 
+  }
+  
+  /**
+   * 
+   * @throws IOException
+   */
+  @Test
+  public void testProcessProjectPropertiesClassForName() throws IOException {
+    
+    AbstractArtifactBuilder artifactBuilder = (AbstractArtifactBuilder) PropertiesToPojosParseUtil.createObject("de.fw.devops.utils.misc.ProjectSnippetBuilder");
+    
+    artifactBuilder.properties("src/test/resources/snippets/modeldata").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target/3")
+        .process();
+    
+    assertThat(new String(Files.readAllBytes(Paths.get("target/3/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
+    assertThat(new String(Files.readAllBytes(Paths.get("target/3/snippets/myApp2/pom.xml")))).doesNotContain("[=mavenproject.name]");
+    
   }
   
 }

@@ -1,0 +1,30 @@
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+.dm
+.dmignore
+ 
+# Intellij
+.idea/
+*.iml
+*.iws
+ 
+# Maven
+log/
+**/target/**
+*.versionsBackup
+
+.repository/
+
+**/generated-sources/**
+**/launch/**
+
+# logs
+**/*.log*
+
+
+#vscode
+.factorypath
+.vscode

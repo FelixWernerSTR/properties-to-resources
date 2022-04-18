@@ -1,0 +1,34 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${deployment.name}
+  namespace: ${deployment.namespace}
+spec:
+  rules:
+<#if deployment.hostPrefix??>    
+    - host: ${deployment.hostPrefix}.${deployment.hostSuffix}
+<#else>    
+    - host: ${deployment.name}.${deployment.hostSuffix}
+</#if> 
+      http:
+        paths:
+<#if deployment.routePath??>  
+          - path: /${deployment.routePath}
+<#else>    
+          - path: /
+</#if>
+            pathType: Prefix
+            backend:
+              service:
+                name: ${deployment.name}
+                port:
+                  number: 80
+<#list routes as route>
+          - path: /${route.path}
+            pathType: Prefix
+            backend:
+              service:
+                name: ${deployment.name}
+                port:
+                  number: 80
+</#list>
