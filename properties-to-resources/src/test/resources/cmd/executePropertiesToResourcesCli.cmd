@@ -1,2 +1,2 @@
-set JAVA_HOME=C:/developerbase/java/jdk-11.0.13
-call %JAVA_HOME%/bin/java -jar properties-to-resources-cli.jar -i datamodel/svis3g-agrar.properties -o output -t snippets_maven_openshift
+set JAVA_HOME=D:\devel\java\jdk-11.0.13+8
+call %JAVA_HOME%/bin/java -jar properties-to-resources-cli.jar -i datamodel/project.properties -o output -t snippets_maven_openshift
