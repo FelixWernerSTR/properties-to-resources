@@ -43,10 +43,18 @@ spec:
             - configMapRef:
                 name: ${deployment.configMapRef}
 </#if>
+<#list configmaprefs as configmapref>
+            - configMapRef:
+                name: ${configmapref.name}
+</#list>
 <#if deployment.secretRef??>
             - secretRef:
                 name: ${deployment.secretRef}
-</#if>                
+</#if>
+<#list secretrefs as secretref>
+            - secretRef:
+                name: ${secretref.name}
+</#list>                
           ports:
            -  containerPort: ${deployment.containerPort}
           resources:

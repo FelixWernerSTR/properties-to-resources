@@ -48,6 +48,14 @@ public abstract class AbstractArtifactBuilder {
   public abstract void registerPojos();
   
   /**
+   * 
+   */
+  public void parseToPojos() {
+    pojoPropertiesParseUtil.parseToPojos();
+  }
+  
+  /**
+   * @param templateName
    * @return name for Template
    */
   public abstract String resolveNameForRessource(String templateName);
@@ -109,7 +117,9 @@ public abstract class AbstractArtifactBuilder {
     logger.info("config: {}", this);
     pojoPropertiesParseUtil = PropertiesToPojosParseUtil.properties(ApacheCommonsConfigReader.fromProperties(propertiesPath).process());
     registerPojos();
-    pojoPropertiesParseUtil.parseToPojos();
+    parseToPojos();
+    
+    logger.debug("parsed dataModel: {}", pojoPropertiesParseUtil.getDataModel());
     
     String targetSuffix = resolveTargetPathSuffix();
     
@@ -130,7 +140,9 @@ public abstract class AbstractArtifactBuilder {
       List<Path> deploymentProperties = stream.filter(c -> c.getFileName().toString().endsWith(".properties")).collect(Collectors.toList());
       for (Path depl : deploymentProperties) {
         ((AbstractArtifactBuilder) PropertiesToPojosParseUtil.createObject(this.getClass().getName())).properties(depl.toString())
-            .templatePath(templatePath.toString()).targetPath(targetPath.toString()).processProperties();
+            .templatePath(templatePath.toString())
+            .targetPath(targetPath.toString())
+            .processProperties();
       }
     }
   }

@@ -64,7 +64,7 @@
                    <goal>build</goal>
                     </goals>
                     <configuration>
-                       <sourceDir>${project.basedir}/src/test/resources/modeldata</sourceDir>
+                       <sourceDir>${project.basedir}/src/test/resources/datamodel</sourceDir>
                        <templateDir>${project.build.directory}/templates/snippets_maven_openshift</templateDir>
                        <targetDir>${project.build.directory}</targetDir>
                     </configuration>

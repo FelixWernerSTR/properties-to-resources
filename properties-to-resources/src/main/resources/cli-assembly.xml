@@ -1,0 +1,28 @@
+<assembly>
+  <id>cli</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+   <files>
+    <file>
+      <source>target/properties-to-resources-cli.jar</source>
+      <outputDirectory>./</outputDirectory>
+      <filtered>false</filtered>
+    </file>
+  </files>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/resources/templates/snippets_maven_openshift</directory>
+      <outputDirectory>snippets_maven_openshift</outputDirectory>
+    </fileSet>
+     <fileSet>
+      <directory>src/test/resources/snippets/datamodel</directory>
+      <outputDirectory>datamodel</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/test/resources/cmd</directory>
+      <outputDirectory>./</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

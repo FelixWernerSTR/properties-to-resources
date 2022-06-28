@@ -10,9 +10,12 @@ import org.apache.logging.log4j.Logger;
 
 import de.fw.devops.utils.AbstractArtifactBuilder;
 import de.fw.devops.utils.openshift.domain.ConfigMap;
+import de.fw.devops.utils.openshift.domain.ConfigMapRef;
 import de.fw.devops.utils.openshift.domain.Deployment;
+import de.fw.devops.utils.openshift.domain.Environment;
 import de.fw.devops.utils.openshift.domain.Route;
 import de.fw.devops.utils.openshift.domain.Secret;
+import de.fw.devops.utils.openshift.domain.SecretRef;
 import de.fw.devops.utils.openshift.domain.StageSysProperty;
 
 /**
@@ -46,6 +49,9 @@ public class OpenShiftDeploymentBuilder extends AbstractArtifactBuilder {
     pojoPropertiesParseUtil.registerPojo(new Secret(), "secrets", new HashMap<String, Secret>());
     pojoPropertiesParseUtil.registerPojo(new Route(), "routes", new HashMap<String, Route>());
     pojoPropertiesParseUtil.registerPojo(new StageSysProperty(), "stagesysproperties", stageSysPropertiesMapping);
+    pojoPropertiesParseUtil.registerPojo(new Environment(), "environments", new HashMap<String, Environment>());
+    pojoPropertiesParseUtil.registerPojo(new ConfigMapRef(), "configmaprefs", new HashMap<String, ConfigMapRef>());
+    pojoPropertiesParseUtil.registerPojo(new SecretRef(), "secretrefs", new HashMap<String, SecretRef>());
   }
   
   /**

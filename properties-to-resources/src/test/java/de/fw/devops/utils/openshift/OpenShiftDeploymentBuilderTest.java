@@ -26,13 +26,13 @@ public class OpenShiftDeploymentBuilderTest {
   @Test
   public void testProcessDeploymentProperties() throws IOException {
     
-    System.setProperty("yaml.upload.nexus.dirSuffixDev", "openshift/dev");// ist f�r jede Stage in Maven zu definieren.
+    System.setProperty("yaml.upload.nexus.dirSuffixDev", "openshift/dev");// ist fuer jede Stage in Maven zu definieren.
     System.setProperty("yaml.upload.nexus.dirSuffixPreProd", "openshift/preprod"); // Mapping Namespace/Sysproperty ist in stageSysPropMapping.properties definiert.
-                                                                            // Die Konfiguration wird auch f�r wagon-mavan-plugin verwendet, um f�r jedes
+                                                                            // Die Konfiguration wird auch fuer wagon-mavan-plugin verwendet, um fuer jedes
                                                                             // Namespace die Artefakte nach Nexus hochzuladen
     System.setProperty("basedir", new File(".").getAbsolutePath());
     
-    OpenShiftDeploymentBuilder.fromProperties("src/test/resources/openshift/example-config/dev/myapp-dev.properties")// hier f�r ein Deployment-Model
+    OpenShiftDeploymentBuilder.fromProperties("src/test/resources/openshift/example-config/dev/myapp-dev.properties")// hier fuer ein Deployment-Model
         .templatePath("src/main/resources/templates/openshift") //
         .targetPath("target") //
         .process();
@@ -49,7 +49,7 @@ public class OpenShiftDeploymentBuilderTest {
   @Test
   public void testProcessDeploymentPropertiesDir() throws IOException {
     
-    OpenShiftDeploymentBuilder.fromProperties("src/test/resources/openshift/example-config/dev")// hier f�r mehrere Deployment_modelle im Verzeichnis. So wird
+    OpenShiftDeploymentBuilder.fromProperties("src/test/resources/openshift/example-config/dev")// hier fuer mehrere Deployment_modelle im Verzeichnis. So wird
                                                                                                 // es aus Maven
         // verwendet. Siehe Maven-Profile "yaml-build"
         .templatePath("src/main/resources/templates/openshift") //
@@ -60,7 +60,7 @@ public class OpenShiftDeploymentBuilderTest {
     assertThat(Files.exists(Paths.get("target/openshift/prod/myApp/myApp_Deployment_v1.yaml"))).isTrue();// mit
                                                                                                                  // deployment.targetPathSuffix=openshift/rt.
                                                                                                                  // Nicht empfohlen. Man braucht trotzdem die
-                                                                                                                 // Systemproperties f�r wagon-maven-plugin.
+                                                                                                                 // Systemproperties fuer wagon-maven-plugin.
                                                                                                                  // Auf
                                                                                                                  // die Art hat man redundante Konfiguration
     OpenShiftDeploymentBuilder.fromProperties("src/test/resources/openshift/example-config/sonarqube").templatePath("src/main/resources/templates/openshift") //

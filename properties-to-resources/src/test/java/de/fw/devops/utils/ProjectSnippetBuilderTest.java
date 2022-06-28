@@ -27,7 +27,7 @@ public class ProjectSnippetBuilderTest {
   public void testProcessProjectProperties() throws IOException {
     
     ProjectSnippetBuilder //
-        .fromProperties("src/test/resources/snippets/modeldata/project.properties")// hier für ein Project-Model
+        .fromProperties("src/test/resources/snippets/datamodel/project.properties")// hier für ein Project-Model
         .templatePath("src/main/resources/templates/snippets_maven_openshift") //
         .targetPath("target/1") //
         .processProperties();
@@ -43,7 +43,7 @@ public class ProjectSnippetBuilderTest {
   public void testProcessProjectPropertiesDir() throws IOException {
     
     ProjectSnippetBuilder //
-        .fromProperties("src/test/resources/snippets/modeldata").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target/2") //
+        .fromProperties("src/test/resources/snippets/datamodel").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target/2") //
         .process();
     
     assertThat(new String(Files.readAllBytes(Paths.get("target/2/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
@@ -60,7 +60,7 @@ public class ProjectSnippetBuilderTest {
     
     AbstractArtifactBuilder artifactBuilder = (AbstractArtifactBuilder) PropertiesToPojosParseUtil.createObject("de.fw.devops.utils.misc.ProjectSnippetBuilder");
     
-    artifactBuilder.properties("src/test/resources/snippets/modeldata").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target/3")
+    artifactBuilder.properties("src/test/resources/snippets/datamodel").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target/3")
         .process();
     
     assertThat(new String(Files.readAllBytes(Paths.get("target/3/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
