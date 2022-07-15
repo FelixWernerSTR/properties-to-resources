@@ -1,0 +1,1 @@
+Verwendung von "properties-to-resources" als Demo-UI!

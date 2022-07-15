@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -119,7 +120,7 @@ public abstract class AbstractArtifactBuilder {
     registerPojos();
     parseToPojos();
     
-    logger.debug("parsed dataModel: {}", pojoPropertiesParseUtil.getDataModel());
+    logger.debug("parsed dataModel: {}", getDataModel());
     
     String targetSuffix = resolveTargetPathSuffix();
     
@@ -130,6 +131,13 @@ public abstract class AbstractArtifactBuilder {
     } else {
       logger.warn("skip deployment properties because no targetPathSuffix resolved {} ", propertiesPath.getFileName());
     }
+  }
+  
+  /**
+   * @return Map<String, Object>
+   */
+  public Map<String, Object> getDataModel() {
+    return pojoPropertiesParseUtil.getDataModel();
   }
   
   /**
@@ -167,7 +175,7 @@ public abstract class AbstractArtifactBuilder {
       List<Path> templates = stream.filter(c -> c.getFileName().toString().startsWith("template")).collect(Collectors.toList());
       for (Path template : templates) {
         logger.info("process template: {}", template);
-        generator.generate(pojoPropertiesParseUtil.getDataModel(), template.getFileName().toString(),
+        generator.generate(getDataModel(), template.getFileName().toString(),
             addPrefixPathForResource(resolveNameForRessource(template.getFileName().toString())));
       }
     }
@@ -179,6 +187,27 @@ public abstract class AbstractArtifactBuilder {
    */
   public String addPrefixPathForResource(String resourcePath) {
     return resourcePath;
+  }
+  
+  /**
+   * @param className
+   * @return AbstractArtifactBuilder
+   */
+  public static AbstractArtifactBuilder createArtifactBuilder(String className) {
+    return (AbstractArtifactBuilder) PropertiesToPojosParseUtil.createObject(className);
+  }
+  
+  /**
+   * @param templatesFolder
+   * @return AbstractArtifactBuilder
+   * @throws IOException
+   */
+  public static AbstractArtifactBuilder fromTemplatesFolder(String templatesFolder) throws IOException {
+    return createArtifactBuilder(resolveClassnameFromTemplatesFolder(templatesFolder));
+  }
+  
+  private static String resolveClassnameFromTemplatesFolder(String path) throws IOException {
+    return new String(Files.readAllBytes(Paths.get(path + File.separator + "datamodelProvider.properties")));
   }
   
   @Override
