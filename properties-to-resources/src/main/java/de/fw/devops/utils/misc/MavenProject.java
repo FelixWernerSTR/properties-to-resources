@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.fw.devops.utils.PropertiesToPojosParseUtil;
+
 /**
  * POJO für MavenProject um Snippets wie pom.xml, .project und beliebig strukturierte Artefakte für ein Maven-Projekt zu erzeugen. einfach ein
  * "template_einSnippet.file-extension" im template-Verzeichnis zur Verfügung stellen.
@@ -122,7 +124,7 @@ public class MavenProject {
     List<String> fieldList = new ArrayList<>();
     
     for (Field field : fields) {
-      fieldList.add(MavenProject.class.getSimpleName().toLowerCase() + "[.]" + field.getName());
+      fieldList.add(MavenProject.class.getSimpleName().toLowerCase() + PropertiesToPojosParseUtil.REGEX_PATTERN_CORE_SINGLE_POJO + field.getName());
     }
     return fieldList;
   }

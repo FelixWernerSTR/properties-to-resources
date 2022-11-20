@@ -9,7 +9,7 @@ import de.fw.devops.utils.PropertiesToPojosParseUtil;
 /**
  * POJO für Openshift/Kubernetes-ConfigMap
  * 
- * @author N0009271
+ * @author Felix Werner
  *
  */
 @SuppressWarnings("javadoc")

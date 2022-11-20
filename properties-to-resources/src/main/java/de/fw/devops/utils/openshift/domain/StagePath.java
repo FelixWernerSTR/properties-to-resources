@@ -6,21 +6,21 @@ import java.util.List;
 
 import de.fw.devops.utils.PropertiesToPojosParseUtil;
 
+
 /**
- * POJO für Mapping Namespace=SysProperty. SysProperty hält PathSuffix für die generierten Artefakte.
+ * POJO f�r Mapping Namespace=Path. StagePath PathSuffix für die generierten Artefakte.
  * 
- * Beispiel: stagesysproperty.pr.mapping=myapp-dev:yaml.upload.nexus.dirSuffixDev stagesysproperty.dev.mapping=myapp-dev:yaml.upload.nexus.dirSuffixDev
- * stagesysproperty.preprod.mapping=myapp-preprod:yaml.upload.nexus.dirSuffixPreProd
+ * Beispiel: stagepath.pr.mapping=sv-pr-svis:sv-pr
  * 
  * @author Felix Werner
  *
  */
 @SuppressWarnings("javadoc")
-public class StageSysProperty {
+public class StagePath {
   
   @Override
   public String toString() {
-    return "StageSysProperty [mapping=" + mapping + "]";
+    return "StagePath [mapping=" + mapping + "]";
   }
   
   /**
@@ -41,13 +41,13 @@ public class StageSysProperty {
   
   public static List<String> getRegex() {
     
-    Class<StageSysProperty> aClass = StageSysProperty.class;
+    Class<StagePath> aClass = StagePath.class;
     Field[] fields = aClass.getDeclaredFields();
     
     List<String> fieldList = new ArrayList<>();
     
     for (Field field : fields) {
-      fieldList.add(StageSysProperty.class.getSimpleName().toLowerCase() + PropertiesToPojosParseUtil.REGEX_PATTERN_CORE + field.getName());
+      fieldList.add(StagePath.class.getSimpleName().toLowerCase() + PropertiesToPojosParseUtil.REGEX_PATTERN_CORE + field.getName());
     }
     return fieldList;
   }

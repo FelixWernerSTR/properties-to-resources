@@ -9,7 +9,7 @@ import de.fw.devops.utils.PropertiesToPojosParseUtil;
 /**
  * POJO fuer setEnvironemt.sh/cmd
  * 
- * @author N0009271
+ * @author Felix Werner
  *
  */
 @SuppressWarnings("javadoc")

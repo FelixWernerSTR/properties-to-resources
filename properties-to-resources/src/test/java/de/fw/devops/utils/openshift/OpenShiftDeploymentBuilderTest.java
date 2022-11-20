@@ -26,10 +26,6 @@ public class OpenShiftDeploymentBuilderTest {
   @Test
   public void testProcessDeploymentProperties() throws IOException {
     
-    System.setProperty("yaml.upload.nexus.dirSuffixDev", "openshift/dev");// ist fuer jede Stage in Maven zu definieren.
-    System.setProperty("yaml.upload.nexus.dirSuffixPreProd", "openshift/preprod"); // Mapping Namespace/Sysproperty ist in stageSysPropMapping.properties definiert.
-                                                                            // Die Konfiguration wird auch fuer wagon-mavan-plugin verwendet, um fuer jedes
-                                                                            // Namespace die Artefakte nach Nexus hochzuladen
     System.setProperty("basedir", new File(".").getAbsolutePath());
     
     OpenShiftDeploymentBuilder.fromProperties("src/test/resources/openshift/example-config/dev/myapp-dev.properties")// hier fuer ein Deployment-Model

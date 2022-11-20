@@ -27,6 +27,9 @@ public class PropertiesToPojosParseUtil {
   @SuppressWarnings("javadoc")
   public static final String REGEX_PATTERN_CORE = "[.](.+)[.]";
   
+  @SuppressWarnings("javadoc")
+  public static final String REGEX_PATTERN_CORE_SINGLE_POJO = "[.]";
+  
   private Properties properties;
   private Map<String, Object> pojos = null;
   private Map<String, String> pojoTypeKeyMapping = null;

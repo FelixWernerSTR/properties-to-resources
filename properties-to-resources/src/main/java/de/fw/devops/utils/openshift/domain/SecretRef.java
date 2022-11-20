@@ -12,7 +12,7 @@ import de.fw.devops.utils.PropertiesToPojosParseUtil;
  * Sollte nur bei der Entwicklung und Test verwendet werden. In Properties und Git sollten ja die Passw�rter nicht in Klartext sein. Secret-Yaml-Files d�rfen
  * auch nicht nach Nexus upgeloadet werden.
  * 
- * @author N0009271
+ * @author Felix Werner
  *
  */
 @SuppressWarnings("javadoc")

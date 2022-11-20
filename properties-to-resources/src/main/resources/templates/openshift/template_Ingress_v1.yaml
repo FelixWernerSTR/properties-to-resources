@@ -13,7 +13,7 @@ spec:
       http:
         paths:
 <#if deployment.routePath??>  
-          - path: /${deployment.routePath}
+          - path: ${deployment.routePath}
 <#else>    
           - path: /
 </#if>
@@ -24,7 +24,7 @@ spec:
                 port:
                   number: 80
 <#list routes as route>
-          - path: /${route.path}
+          - path: ${route.path}
             pathType: Prefix
             backend:
               service:

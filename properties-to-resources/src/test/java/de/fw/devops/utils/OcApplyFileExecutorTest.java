@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
-import de.fw.devops.utils.PropertiesReader;
 import de.fw.devops.utils.openshift.OcApplyFileExecutor;
 
 /**

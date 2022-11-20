@@ -4,19 +4,59 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 
 /**
- * experimentel
+ * 
+ * Diese Klasse wird verwendet um sh(cmd)-Skripte aufzurufen, die yaml-Files gegen OpenShift mit Hilfe von oc-Tool ausfuehrt: "oc apply x.yaml" siehe:
+ * src/main/resources/templates/openshift
+ * 
+ * oc muss sich im PATH befinden.
+ * 
+ * Benutzername/Pass@ord wird ueber Environment-Variablen bezogen OPENSHIFT_OC_USERNAME/OPENSHIFT_OC_PASSWORD und an sh/cmd Skripte weitergegeben. (oc login
+ * https://api.cntr.sv.loc:6443/ --username=$1 --password=$2)
+ * 
+ * Benutzername/Pass@ord koennen verschlueselt(sind sie auch auf Jenkins)bereitgestellt werden(rg.springframework.security.crypto.encrypt). Siehe
+ * properties-to-resources/src/test/java/de/svi/devops/utils/OcApplyFileExecutorTest.java
+ * 
+ * Beispiel-Aufruf über maven-exec-plugin:
+ *     <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>executing yaml to svi-ew-svis</id>
+            <phase>package</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+            <configuration>
+              <mainClass>de.svi.devops.utils.openshift.OcApplyFileExecutor</mainClass>
+              <workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
+              <arguments>
+                <argument>${yaml-oc-apply.yamlPathEW}/${yaml-oc-apply.executableScript}</argument>
+                <argument>${yaml-oc-apply.yamlPathEW}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+ * 
+ * Siehe auch: svis-maven-tiles\tile.xml Maven-Profil: yaml-oc-apply
  * 
  * @author Felix Werner
  */
 public class OcApplyFileExecutor {
   private static Logger logger = LogManager.getLogger(OcApplyFileExecutor.class);
+  
+  private static final String ENCRYPTED_VALUE_PREFIX = "ENC(";
+  private static final String ENCRYPTED_VALUE_SUFFIX = ")";
   
   private Path workingDirectory;
   private String script;
@@ -74,37 +114,66 @@ public class OcApplyFileExecutor {
    * @throws Exception
    */
   public static void main(String[] args) throws Exception {
-    if (args == null || args.length < 2) {
-      logger.info("Bitte sh/cmd-script und workingDir angeben!");
+    if (args == null || args.length < 1) {
+      logger.info("Bitte sh/cmd-script und/oder workingDir angeben!");
       return;
     }
-    new OcApplyFileExecutor().script(args[0]).workingDirectory(args[1]).process();
+    if(args.length==1) {
+      logger.info("with exit code! {}", new OcApplyFileExecutor().workingDirectory(args[0]).chmod());
+    }else {
+      logger.info("with exit code! {}", new OcApplyFileExecutor().script(args[0]).workingDirectory(args[1]).process());
+    }
+    
   }
   
-  /**
-   * In diesen Main kann man Benutzernamen/Password verschlüsseln und in Jenkins als Environmentvaribalen zur Verfügung stellen:
-   * OPENSHIFT_OC_PASSWORD=ENC(verschlüsselt) OPENSHIFT_OC_USERNAME=ENC(verschlüsselt)
-   * 
-   * wird experimentel für FT verwendet
-   * 
-   * @param args
-   * @throws Exception
-   */
-  public static void main2(String[] args) throws Exception {
-    OcApplyFileExecutor ocexec = new OcApplyFileExecutor();
-    String s = ocexec.encrypt("N000XXX");
-    logger.info(s);
-    logger.info(ocexec.decrypt(s));
-    String p = ocexec.encrypt("P@ssW@rd");
-    logger.info(p);
-    logger.info(ocexec.decrypt(p));
-    String getenv = "ENC(aefgsrtherj)";
-    logger.info(getenv.substring(getenv.indexOf("ENC(") + 4, getenv.length() - 1));
-  }
-  
-  int process() throws Exception {
+  public int process() throws Exception {
     logger.info("start executing: {}", getScript());
+    
+    if(System.getenv().get("OSTYPE")!=null && System.getenv().get("OSTYPE").toLowerCase().startsWith("linux")) {
+      chmod();
+    }else {
+      logger.info("attention obviously executing on windows!");
+    }
+    
     ProcessBuilder processBuilder = new ProcessBuilder(getScript(), getUsername(), getPassword());
+    
+    processBuilder.directory(workingDirectory.toFile());
+    Process process = processBuilder.start();
+    
+    {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+      String line;
+      while ((line = reader.readLine()) != null) {
+        if (line.contains("--password")) {
+          line = line.substring(0, line.indexOf("--password"));
+          logger.info("{} --password=*********", line);
+        } else {
+          logger.info(line);
+        }
+      }
+    }
+    
+    { //eventuell auch fehler ausgeben, sonst gehen sie leise unter
+      BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+      String line;
+      List<String> errors = new ArrayList<>();
+      while ((line = reader.readLine()) != null) {
+        errors.add(line);
+      }
+      if(logger.isDebugEnabled()) {
+        for(String l: errors) {
+          logger.debug(l);
+        }
+      }else if(!errors.isEmpty()){
+        logger.info("attention! there are errors in error stream! lines read: {}", errors.size());
+      }
+    }
+    logger.info("executing {} finished! ", getScript());
+    return process.waitFor();
+  }
+  
+  public int chmod() throws Exception{
+    ProcessBuilder processBuilder = new ProcessBuilder("chmod", "-R", "775", workingDirectory.toAbsolutePath().toString());
     
     processBuilder.directory(workingDirectory.toFile());
     Process process = processBuilder.start();
@@ -112,17 +181,12 @@ public class OcApplyFileExecutor {
     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
     String line;
     while ((line = reader.readLine()) != null) {
-      if (line.contains("--password")) {
-        line = line.substring(0, line.indexOf("--password"));
-        logger.info("{} --password=*********", line);
-      } else {
-        logger.info(line);
-      }
+     logger.info(line);
     }
-    logger.info("executing {} finished! ", getScript());
-    return process.waitFor();
+    logger.info("executing chmod 775 on {} finished !", workingDirectory.toAbsolutePath().toString());
+    return process.waitFor();   
   }
-  
+
   /**
    * @return the script
    */
@@ -152,9 +216,17 @@ public class OcApplyFileExecutor {
     }
   }
   
+
+  private static boolean isEncryptedValue(String propertyValue) {
+    return propertyValue.startsWith(ENCRYPTED_VALUE_PREFIX) && propertyValue.endsWith(ENCRYPTED_VALUE_SUFFIX);
+  }
+  
   private String getFromEnv(String getenv) {
-    if (getenv != null && getenv.startsWith("ENC(")) {
-      return decrypt(getenv.substring(getenv.indexOf("ENC(") + 4, getenv.length() - 1));
+    if (isEncryptedValue(getenv)) {
+   // ohne Pre and Suffix, also z.B. ohne "ENC(" und ohne ")"
+      final String secretWithoutPreAndSuffix = getenv.substring(ENCRYPTED_VALUE_PREFIX.length(),
+          getenv.length() - ENCRYPTED_VALUE_SUFFIX.length());
+      return decrypt(secretWithoutPreAndSuffix);
     } else {
       return getenv;
     }
@@ -165,7 +237,7 @@ public class OcApplyFileExecutor {
    * @return string encrypted
    */
   public String encrypt(String plain) {
-    return encrypt(plain, getMasterSecret());
+    return getEncryptor().encrypt(plain);
   }
   
   private String getMasterSecret() {
@@ -181,20 +253,31 @@ public class OcApplyFileExecutor {
    * @return plain string
    */
   public String decrypt(String secret) {
-    return decrypt(secret, getMasterSecret());
+    return getEncryptor().decrypt(secret);
   }
   
-  // Verschlüsselungsmethoden mit spring-security-crypto
-  private static final String SALT = "fa04387396e3756f";
+  private TextEncryptor encryptor = EncryptorStandard.fromMasterSecret(getMasterSecret());
   
-  private String encrypt(String strToEncrypt, String masterSecret) {
-    TextEncryptor encryptor = Encryptors.text(masterSecret, SALT);
-    return encryptor.encrypt(strToEncrypt);
+  /**
+   * @param encryptor the encryptor to set
+   * @return this
+   */
+  public OcApplyFileExecutor encryptor(TextEncryptor encryptor) {
+    this.encryptor = encryptor;
+    return this;
   }
   
-  private String decrypt(String strToDecrypt, String masterSecret) {
-    TextEncryptor decryptor = Encryptors.text(masterSecret, SALT);
-    return decryptor.decrypt(strToDecrypt);
+  /**
+   * @return TextEncryptor
+   */
+  public TextEncryptor getEncryptor() {
+    String encryptionType = System.getProperty("password.based.encryption", "standard");
+    
+    if (encryptionType.equals("stronger")) {
+      encryptor = EncryptorStronger.fromMasterSecret(getMasterSecret());
+    }
+    logger.trace("encrypting with {}", encryptor);
+    return encryptor;
   }
   
 }

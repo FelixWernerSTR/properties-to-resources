@@ -3,6 +3,7 @@ package de.fw.devops.utils.misc;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,15 +12,23 @@ import org.apache.logging.log4j.Logger;
 
 import de.fw.devops.utils.AbstractArtifactBuilder;
 
+
 /**
  * 
  * @author Felix Werner
  */
 public class ProjectSnippetBuilder extends AbstractArtifactBuilder {
   
-  static Logger logger = LogManager.getLogger(ProjectSnippetBuilder.class);
+  private static Logger logger = LogManager.getLogger(ProjectSnippetBuilder.class);
+  private static Pattern searchPatternDev = Pattern.compile("(.*)-(ew|ft)(.properties)");
+  private static Pattern searchPatternPatch = Pattern.compile("(.*)-(bt|ep|pt|rt|st|vt)(.properties)");
+  private static Pattern searchPatternProd = Pattern.compile("(.*)-(et|sc|pr)(.properties)");
   private MavenProject mavenProject = new MavenProject();
   
+  /**
+   * @param path
+   * @return AbstractArtifactBuilder
+   */
   public static AbstractArtifactBuilder fromProperties(String path) {
     return new ProjectSnippetBuilder().properties(path);
   }
@@ -27,6 +36,7 @@ public class ProjectSnippetBuilder extends AbstractArtifactBuilder {
   @Override
   public void registerPojos() {
     pojoPropertiesParseUtil.registerPojo(new MavenProject(), "mavenproject", mavenProject);
+    pojoPropertiesParseUtil.registerPojo(new Dependency(), "dependencies", new HashMap<String, Dependency>());
   }
   
   @Override
@@ -36,6 +46,9 @@ public class ProjectSnippetBuilder extends AbstractArtifactBuilder {
     }
     if (templateName.endsWith("_deployment.properties")) {
       return "deployment.properties";
+    }
+    if (templateName.endsWith("_stagePathMapping.properties")) {
+      return "stagePathMapping.properties";
     }
     if (templateName.endsWith("_placeholder-replacement-config.properties")) {
       return "placeholder-replacement-config.properties";
@@ -54,35 +67,51 @@ public class ProjectSnippetBuilder extends AbstractArtifactBuilder {
   }
   
   @Override
-  public String resolveNameForTargetPath() {
+  public String resolveFinalPathSuffix() {
     return mavenProject.getName();
   }
   
-  private Pattern searchPattern = Pattern.compile("(.*)-(.*)(.properties)");
-  
   @Override
-  public String addPrefixPathForResource(String resorcePath) {
+  public String addPrefixPathForResource(String resourcePath) {
     try {
-      if (!Files.exists(Paths.get(targetPath + "/src/main/resources/dev"))) {
-        Files.createDirectories(Paths.get(targetPath + "/src/main/resources/dev"));
+      if (!Files.exists(Paths.get(targetPath + "/src/main/resources/openshift/dev"))) {
+        Files.createDirectories(Paths.get(targetPath + "/src/main/resources/openshift/dev"));
+      }
+      if (!Files.exists(Paths.get(targetPath + "/src/main/resources/openshift/patch"))) {
+        Files.createDirectories(Paths.get(targetPath + "/src/main/resources/openshift/patch"));
+      }
+      if (!Files.exists(Paths.get(targetPath + "/src/main/resources/openshift/prod"))) {
+        Files.createDirectories(Paths.get(targetPath + "/src/main/resources/openshift/prod"));
       }
     } catch (IOException e) {
       e.printStackTrace();
+      logger.warn("exception by addPrefixPathForResource", e);
     }
     
-    if (resorcePath.endsWith("deployment.properties")) {
-      return "src/main/resources/dev/" + resorcePath;
+    if (resourcePath.endsWith("deployment.properties")) {
+      return "src/main/resources/openshift/" + resourcePath;
     }
-    if (resorcePath.contains("placeholder-replacement-config")) {
-      return "src/main/resources" + resorcePath;
+    if (resourcePath.endsWith("stagePathMapping.properties")) {
+      return "src/main/resources/openshift/" + resourcePath;
+    }
+    if (resourcePath.contains("placeholder-replacement-config")) {
+      return "src/main/resources/" + resourcePath;
     }
     
-    Matcher matcher = searchPattern.matcher(resorcePath);
+    Matcher matcher = searchPatternDev.matcher(resourcePath);
     if (matcher.find()) {
-      return "src/main/resources/dev/" + resorcePath;
+      return "src/main/resources/openshift/dev/" + resourcePath;
+    }
+    matcher = searchPatternPatch.matcher(resourcePath);
+    if (matcher.find()) {
+      return "src/main/resources/openshift/patch/" + resourcePath;
+    }
+    matcher = searchPatternProd.matcher(resourcePath);
+    if (matcher.find()) {
+      return "src/main/resources/openshift/prod/" + resourcePath;
     }
     
-    return resorcePath;
+    return resourcePath;
   }
   
   @Override

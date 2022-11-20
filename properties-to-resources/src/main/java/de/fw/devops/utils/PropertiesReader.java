@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * 
- * @author N0008246
+ * @author Felix Werner
  */
 public class PropertiesReader {
   private static final Logger logger = LogManager.getLogger(PropertiesReader.class.getName());
@@ -31,7 +31,7 @@ public class PropertiesReader {
     try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(propertyFile.toFile()), StandardCharsets.UTF_8))) {
       properties.load(in);
     } catch (IOException | SecurityException e) {
-      logger.warn("error reading file: {1} exception: {2} ", propertyFile, e);
+      logger.warn("error reading file: {} exception: {} ", propertyFile, e);
     }
     
     return properties;

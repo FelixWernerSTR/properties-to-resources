@@ -9,8 +9,6 @@ import java.nio.file.Paths;
 import org.junit.Test;
 
 import de.fw.devops.utils.misc.ProjectSnippetBuilder;
-import de.fw.devops.utils.AbstractArtifactBuilder;
-import de.fw.devops.utils.PropertiesToPojosParseUtil;
 
 /**
  * 

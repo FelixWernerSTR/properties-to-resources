@@ -39,7 +39,7 @@ public class FreemarkerTemplateProcessor {
   private Path templatePath;
   private Path targetPath;
   
-  public static String INTERPOLATION_SYNTAX = "interpolationSyntax";
+  public static final String INTERPOLATION_SYNTAX = "interpolationSyntax";
   private int interpolationSyntax = Configuration.LEGACY_INTERPOLATION_SYNTAX;
   
   /**
