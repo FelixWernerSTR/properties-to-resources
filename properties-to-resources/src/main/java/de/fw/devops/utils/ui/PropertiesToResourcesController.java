@@ -31,12 +31,15 @@ public class PropertiesToResourcesController {
     this.propertiesToResourcesPanel = propertiesToResourcesPanel;
     // init comboboxes with default values
     dataModelPropertiesFolders.add("datamodel/project.properties");
+    dataModelPropertiesFolders.add("example-config-simple-showcase/myApp-dev.properties");
     propertiesToResourcesPanel.setComboBox(dataModelPropertiesFolders, propertiesToResourcesPanel.getDataModelPropertiesComboBox());
     templatesFolders.add("snippets_maven_openshift");
+    templatesFolders.add("openshift");
     propertiesToResourcesPanel.setComboBox(templatesFolders, propertiesToResourcesPanel.getTemplatesComboBox());
     outputFolders.add("target");
     propertiesToResourcesPanel.setComboBox(outputFolders, propertiesToResourcesPanel.getOutputComboBox());
     registerListeners();
+    propertiesToResourcesPanel.getTextArea().setText("<h2>für Beipiel 'yaml-OpenShift-Konfiguration' bitte: das Model: 'example-config-simple-showcase/svis3g-kfz-ew.properties' und Templates: 'openshift' auswählen</h2>");
   }
   
   /**
@@ -119,13 +122,13 @@ public class PropertiesToResourcesController {
         
         artifactBuilder.process();
         
-        StringBuilder stringBuilder = new StringBuilder("DataModel: ");
+        StringBuilder stringBuilder = new StringBuilder("<h3>DataModel: </h3>");
         for (String s : artifactBuilder.getDataModel().keySet()) {
-          stringBuilder.append(s);
-          stringBuilder.append(" ,");
+          stringBuilder.append("<b>"+s+"</b>");
+          stringBuilder.append("="+artifactBuilder.getDataModel().get(s));
+          stringBuilder.append("<br/>");
         }
-        
-        stringBuilder.append(" succsesfully processed!");
+        stringBuilder.append("<h3>succsesfully processed!</h3>");
         writeTextArea(stringBuilder.toString());
         
       } catch (IOException e1) {

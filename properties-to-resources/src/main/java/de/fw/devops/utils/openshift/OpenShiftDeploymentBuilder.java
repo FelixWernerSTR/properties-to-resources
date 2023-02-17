@@ -88,6 +88,7 @@ public class OpenShiftDeploymentBuilder extends AbstractArtifactBuilder {
 	   */
 	  @Override
 	  public String resolveNameForRessource(String templateName) {
+		logger.info("templateName/deployment.getAppName(): {}/{}", deployment.getAppName(),templateName);
 	    return templateName.replaceFirst("template", deployment.getAppName());
 	  }
 	  

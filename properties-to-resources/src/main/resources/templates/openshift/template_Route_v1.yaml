@@ -38,7 +38,7 @@ spec:
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: ${deployment.appName}-${route.path?lower_case}-${deployment.stage}
+  name: ${deployment.appName}-${route.path?lower_case?remove_beginning("/")}-${deployment.stage}
   namespace: ${deployment.namespace}
 <#if deployment.cookie?? && deployment.cookie == 'true'> 
   annotations:

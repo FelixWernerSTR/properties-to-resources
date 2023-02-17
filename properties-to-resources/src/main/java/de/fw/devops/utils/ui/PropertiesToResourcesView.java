@@ -4,15 +4,14 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.text.JTextComponent;
 
@@ -29,7 +28,7 @@ public class PropertiesToResourcesView extends JPanel {
   private JLabel labelOutput;
   private JComboBox<String> outputComboBox;
   private JButton btnOpenFolderOutput;
-  private JTextArea textArea;
+  private JEditorPane textArea;
   
   /**
    * Create the dialog.
@@ -100,11 +99,6 @@ public class PropertiesToResourcesView extends JPanel {
     add(btnOpenFolderTemplates, gbc_btnOpenFolderTemplates);
     
     btnProcess = new JButton("process");
-    btnProcess.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-      }
-    });
     GridBagConstraints gbc_btnProcess = new GridBagConstraints();
     gbc_btnProcess.fill = GridBagConstraints.HORIZONTAL;
     gbc_btnProcess.insets = new Insets(6, 5, 5, 0);
@@ -148,7 +142,8 @@ public class PropertiesToResourcesView extends JPanel {
     gbc_btnOpenFolderOutput.gridy = 2;
     add(btnOpenFolderOutput, gbc_btnOpenFolderOutput);
     
-    textArea = new JTextArea();
+    textArea = new JEditorPane("text/html", "");
+
     GridBagConstraints gbc_textArea = new GridBagConstraints();
     gbc_textArea.gridheight = 4;
     gbc_textArea.gridwidth = 7;
@@ -227,7 +222,7 @@ public class PropertiesToResourcesView extends JPanel {
     btnStop.addActionListener(actLst);
   }
   
-  public JTextArea getTextArea() {
+  public JEditorPane getTextArea() {
     return textArea;
   }
   

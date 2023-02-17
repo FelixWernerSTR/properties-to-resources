@@ -10,7 +10,7 @@ spec:
   - name: web
     port: 80
     protocol: TCP
-    targetPort: ${deployment.targetPort}
+    targetPort: ${deployment.containerPort}
   selector:
     app: ${deployment.name}
   sessionAffinity: None

@@ -3,12 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
-    <groupId>de.fw</groupId>
-    <version>1.0.0</version>
-    
-	<artifactId>[=mavenproject.name]</artifactId>
 	
+	<!-- ein pom-Template mit Maven-Profilen für eine Springboot-Anwendung. Kann aber auch für eine War-Anwendung angepasst werden -->
+	
+	<!-- "build-images": baut das Docker-Image und pusht nach Nexus -->
+	<!-- "yaml-build": erzeugt yamls für OpenShift -->
+	<!-- "yaml-upload": bringt diese yamls nach Nexus -->
+	<!-- "yaml-oc-apply": führt diese yamls auf Jenkins gegen OpenShift aus-->
+
+	<artifactId>[=mavenproject.name]</artifactId>
 	<packaging>jar</packaging>
 
 	<name>[=mavenproject.name]</name>
@@ -18,12 +21,8 @@
     <!-- for jib configuration -->
     <sendCredentialsOverHttp>true</sendCredentialsOverHttp>
     <jib-maven-plugin.allowInsecureRegistries>true</jib-maven-plugin.allowInsecureRegistries>
-    <nexus.registry.url>${env.NEXUS.REGISTRY.HOST}</nexus.registry.url>
-    <base.docker.image>${nexus.registry.url}/eclipse-temurin:11.0.14.1_1-jre</base.docker.image>
-    <nexus.registry.username>${env.NEXUS.REGISTRY.USERNAME}</nexus.registry.username>
-    <nexus.registry.password>${env.NEXUS.REGISTRY.PASSWORD}</nexus.registry.password>
+    <base.docker.image>${nexus.registry.url}/eclipse-temurin:11.0.17_8-jdk</base.docker.image>
     <maven.settings.serverId>central-proxy</maven.settings.serverId>
-
     <!-- nexus-iq-scan Konfiguration -->
     <!-- https://help.sonatype.com/integrations/nexus-iq-cli -->
     <!-- zusätzliche Konfiguration in: nexus-iq-scan.properties -->
@@ -31,37 +30,8 @@
     <nexus.iq.scan.stage>build</nexus.iq.scan.stage>
     <nexus.iq.scan.scanPatternJarWar>target/${artifactId}-${project.version}.jar</nexus.iq.scan.scanPatternJarWar>
 
-    <!-- yaml deployment for openshift -->
-    <!-- im prod jenkins build sollte dann ${basedir}/src/main/openshift/prod verwendet werden: -Dde.svi.devops.utils.OpenShiftDeploymentBuilder.sourceDir=src/main/openshift/prod -->
-    <de.svi.devops.utils.OpenShiftDeploymentBuilder.sourceDir>${basedir}/src/main/openshift/dev</de.svi.devops.utils.OpenShiftDeploymentBuilder.sourceDir>
-    <de.svi.devops.utils.OpenShiftDeploymentBuilder.templateDir>${project.build.directory}/templates/openshift</de.svi.devops.utils.OpenShiftDeploymentBuilder.templateDir>
-    <de.svi.devops.utils.OpenShiftDeploymentBuilder.targetDir>${project.build.directory}/openshift</de.svi.devops.utils.OpenShiftDeploymentBuilder.targetDir>
-
-    <yaml.upload.nexus.serverId>openshift-deployment</yaml.upload.nexus.serverId>
-    <yaml.upload.nexus.url>https://nexus.pr.sv.loc/repository/ag_prozesse_openshift_deployment</yaml.upload.nexus.url>
-
-    <yaml.upload.nexus.includes>*_ConfigMap_v1.yaml,*_Deployment_v1.yaml,*_Route_v1.yaml,*_Service_v1.yaml</yaml.upload.nexus.includes>
-
-    <yaml.upload.nexus.fromDirBase>${de.svi.devops.utils.OpenShiftDeploymentBuilder.targetDir}</yaml.upload.nexus.fromDirBase>
-    <yaml.upload.nexus.toDirBase>IK12/de/svi/svis</yaml.upload.nexus.toDirBase>
-
-    <yaml.upload.nexus.dirSuffixSVI_EW>svi-ew</yaml.upload.nexus.dirSuffixSVI_EW>
-    <yaml.upload.nexus.dirSuffixSVI_EP>svi-ep</yaml.upload.nexus.dirSuffixSVI_EP>
-
-    <yaml.upload.nexus.dirSuffixSV_FT>sv-ft</yaml.upload.nexus.dirSuffixSV_FT>
-    <yaml.upload.nexus.dirSuffixSV_RT>sv-rt</yaml.upload.nexus.dirSuffixSV_RT>
-    <yaml.upload.nexus.dirSuffixSV_ST>sv-st</yaml.upload.nexus.dirSuffixSV_ST>
-
-    <yaml.upload.nexus.dirSuffixSV_ET>sv-et</yaml.upload.nexus.dirSuffixSV_ET>
-    <yaml.upload.nexus.dirSuffixSV_PR>sv-pr</yaml.upload.nexus.dirSuffixSV_PR>
-    <yaml.upload.nexus.dirSuffixSV_SC>sv-sc</yaml.upload.nexus.dirSuffixSV_SC>
-
-    <yaml.upload.nexus.dirSuffixSV_BT>svi-bt</yaml.upload.nexus.dirSuffixSV_BT>
-    <yaml.upload.nexus.dirSuffixSV_VT>sv-vt</yaml.upload.nexus.dirSuffixSV_VT>
-    <yaml.upload.nexus.dirSuffixSV_PT>sv-pt</yaml.upload.nexus.dirSuffixSV_PT>
-    
     <yaml-oc-apply.executableScript>${project.artifactId}-applyAllScripts.sh</yaml-oc-apply.executableScript>
-    <yaml-oc-apply.yamlPathEW>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSVI_EW}/${project.artifactId}</yaml-oc-apply.yamlPathEW>
+    <yaml-oc-apply.yamlPathEW>${yaml.upload.nexus.fromDirBase}/svi-ew/${project.artifactId}</yaml-oc-apply.yamlPathEW>
 	</properties>
 
 	<profiles>
@@ -107,6 +77,10 @@
 		                    <into>/</into>
 		                    <includes>[=mavenproject.artifactId]:${project.version}.jar</includes>
 		                  </path>
+<!-- 		                  <path> so ist der Start ca. 20% schneller
+							<from>${basedir}/target/${project.artifactId}-${project.version}</from>
+							<into>/${project.artifactId}</into>
+						  </path> -->
 		                </paths>
 		              </extraDirectories>
 		              <container>
@@ -114,6 +88,8 @@
 		                  <arg>sh</arg>
 		                  <arg>-c</arg> <!-- die JVM-Parameter in OpenShift sollten über Env-Variable 'JAVA_TOOL_OPTIONS' reinkommen z.B: JAVA_TOOL_OPTIONS: -Dserver.port=${deployment.containerPort} -Dproject.version.buildnumber=${sys:project.version}-${env:BUILD_NUMBER} -Djava.security.egd=file:/dev/./urandom -Dlog4j2.formatMsgNoLookups=true -->
 		                  <arg>java -jar [=mavenproject.artifactId]:${project.version}.jar</arg>
+		                  <!-- so ist der Start ca. 20% schneller -->
+		                  <!-- <arg>java ${JAVA_OPTS} -noverify -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom -cp /[=mavenproject.artifactId]/WEB-INF/classes:/[=mavenproject.artifactId]/WEB-INF/lib/* "[=mavenproject.groupId].[=mavenproject.artifactId]App"</arg> -->
 		                </entrypoint>
 		              </container>
 		            </configuration>
@@ -123,7 +99,7 @@
        </plugins>
      </build>
     </profile>
-		<profile>
+	<profile>
 			<id>yaml-build</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
@@ -131,34 +107,9 @@
 			<build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>unpack openshift templates</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>unpack</goal>
-                </goals>
-                <configuration>
-                  <artifactItems>
-                    <artifactItem>
-                      <groupId>de.svi.devops</groupId>
-                      <artifactId>properties-to-resources</artifactId>
-                      <classifier>templates-openshift</classifier>
-                      <version>1.0.11</version>
-                      <type>zip</type>
-                      <outputDirectory>${project.build.directory}/templates</outputDirectory>
-                    </artifactItem>
-                  </artifactItems>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>de.svi.maven.plugins</groupId>
-            <artifactId>yaml-openshift-maven-plugin</artifactId>
-            <version>1.0.11</version>
+            <groupId>de.fw.maven.plugins</groupId>
+            <artifactId>properties-to-resources-maven-plugin</artifactId>
+            <version>1.1.0</version>
             <executions>
               <execution>
                 <id>build yaml with yaml-openshift-maven-plugin</id>
@@ -166,9 +117,9 @@
                   <goal>build</goal>
                 </goals>
                 <configuration>
-                  <sourceDir>${de.svi.devops.utils.OpenShiftDeploymentBuilder.sourceDir}</sourceDir>
-                  <templateDir>${de.svi.devops.utils.OpenShiftDeploymentBuilder.templateDir}</templateDir>
-                  <targetDir>${de.svi.devops.utils.OpenShiftDeploymentBuilder.targetDir}</targetDir>
+                  <sourceDir>${basedir}/src/main/resources/openshift/dev</sourceDir>
+                  <templateDir>${basedir}/src/main/resources/openshift/templates</templateDir>
+                  <targetDir>${basedir}/target/openshift/dev</targetDir>                       
                 </configuration>
               </execution>
             </executions>
@@ -176,270 +127,62 @@
         </plugins>
 			</build>
 		</profile>
-    <profile>
-      <id>yaml-oc-apply</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <build>
-         <plugins>
-            <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>exec-maven-plugin</artifactId>
-              <version>${exec-maven-plugin.version}</version>
-              <executions>
-                <execution>
-                  <id>executing: chmod 775 ${yaml-oc-apply.yamlPathEW}</id>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>exec</goal>
-                  </goals>
-                  <configuration>
-                    <skip>${skip.chmod.on.windows}</skip>
-                    <executable>chmod</executable>
-                    <workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
-                    <arguments>
-                      <argument>-R</argument>
-                      <argument>775</argument>
-                      <argument>${yaml-oc-apply.yamlPathEW}</argument>
-                    </arguments>
-                  </configuration>
-                </execution>
-                <execution>
-                  <id>executing yaml to svi-ew-svis</id>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>java</goal>
-                  </goals>
-                  <configuration>
-                    <mainClass>de.svi.devops.utils.openshift.OcApplyFileExecutor</mainClass>
-                    <workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
-                    <arguments>
-                      <argument>${yaml-oc-apply.yamlPathEW}/${yaml-oc-apply.executableScript}</argument>
-                      <argument>${yaml-oc-apply.yamlPathEW}</argument>
-                    </arguments>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-         </plugins>
-      </build>
-    </profile>
-    <profile>
-      <id>yaml-upload</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <properties>
-      </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>wagon-maven-plugin</artifactId>
-            <version>2.0.2</version>
-            <executions>
-              <execution>
-                <id>yaml upload ew</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <!-- kann auch direkt ohne maven-konfiguration upgeloaded werden: -->
-                  <!-- 'https://username:pasxxxord@nexus.pr.sv.loc/repository/ag_prozesse_openshift_deployment/IK12/de/svi/svis/svi-ew/svis-aktuelles' -->
-                  <url>${yaml.upload.nexus.url}</url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSVI_EW}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSVI_EW}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>yaml upload ep</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <url>${yaml.upload.nexus.url}</url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSVI_EP}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSVI_EP}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>yaml upload ft</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <url>${yaml.upload.nexus.url}</url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSV_FT}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSV_FT}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>yaml upload rt</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <url>${yaml.upload.nexus.url}</url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSV_RT}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSV_RT}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>yaml upload st</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <url>${yaml.upload.nexus.url}</url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSV_ST}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSV_ST}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>yaml upload pr</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <url>${yaml.upload.nexus.url}
-                  </url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSV_PR}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSV_PR}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>yaml upload sc</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <url>${yaml.upload.nexus.url}
-                  </url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSV_SC}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSV_SC}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>yaml upload et</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <url>${yaml.upload.nexus.url}
-                  </url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSV_ET}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSV_ET}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>yaml upload bt</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <url>${yaml.upload.nexus.url}
-                  </url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSV_BT}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSV_BT}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>yaml upload vt</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <url>${yaml.upload.nexus.url}
-                  </url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSV_VT}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSV_VT}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-              <execution>
-                <id>yaml upload pt</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>upload</goal>
-                </goals>
-                <configuration>
-                  <serverId>${yaml.upload.nexus.serverId}</serverId>
-                  <url>${yaml.upload.nexus.url}
-                  </url>
-                  <fromDir>${yaml.upload.nexus.fromDirBase}/${yaml.upload.nexus.dirSuffixSV_PT}/${project.artifactId}</fromDir>
-                  <includes>
-                    ${yaml.upload.nexus.includes} <!-- comma separated list -->
-                  </includes>
-                  <toDir>${yaml.upload.nexus.toDirBase}/${yaml.upload.nexus.dirSuffixSV_PT}/${project.artifactId}</toDir>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
+	    <profile>
+	      <id>yaml-oc-apply</id>
+	      <activation>
+	        <activeByDefault>false</activeByDefault>
+	      </activation>
+	      <build>
+	         <plugins>
+	            <plugin>
+	              <groupId>org.codehaus.mojo</groupId>
+	              <artifactId>exec-maven-plugin</artifactId>
+	              <version>${exec-maven-plugin.version}</version>
+	              <executions>
+	                <execution>
+	                  <id>executing: chmod 775 ${yaml-oc-apply.yamlPathEW}</id>
+	                  <phase>package</phase>
+	                  <goals>
+	                    <goal>exec</goal>
+	                  </goals>
+	                  <configuration>
+	                    <skip>${skip.chmod.on.windows}</skip>
+	                    <executable>chmod</executable>
+	                    <workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
+	                    <arguments>
+	                      <argument>-R</argument>
+	                      <argument>775</argument>
+	                      <argument>${yaml-oc-apply.yamlPathEW}</argument>
+	                    </arguments>
+	                  </configuration>
+	                </execution>
+	                <execution>
+	                  <id>executing yaml to svi-ew-svis</id>
+	                  <phase>package</phase>
+	                  <goals>
+	                    <goal>java</goal>
+	                  </goals>
+	                  <configuration>
+	                    <mainClass>de.svi.devops.utils.openshift.OcApplyFileExecutor</mainClass>
+	                    <workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
+	                    <arguments>
+	                      <argument>${yaml-oc-apply.yamlPathEW}/${yaml-oc-apply.executableScript}</argument>
+	                      <argument>${yaml-oc-apply.yamlPathEW}</argument>
+	                    </arguments>
+	                  </configuration>
+	                </execution>
+	              </executions>
+	            </plugin>
+	         </plugins>
+	      </build>
+	    </profile>
 	</profiles>
 
 	<dependencies>
 		<dependency>
-			<groupId>de.svi.devops</groupId>
+			<groupId>de.fw.maven.plugins</groupId>
 			<artifactId>properties-to-resources</artifactId>
-			<version>1.0.11</version>
-		</dependency>
-		<dependency>
-			<groupId>de.svi.devops</groupId>
-			<artifactId>placeholder-utils</artifactId>
-			<version>1.0.11</version>
+			<version>1.1.0</version>
 		</dependency>
 	</dependencies>
 

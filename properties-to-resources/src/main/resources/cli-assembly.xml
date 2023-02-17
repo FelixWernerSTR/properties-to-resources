@@ -21,9 +21,17 @@
       <directory>src/main/resources/templates/snippets_maven_openshift</directory>
       <outputDirectory>snippets_maven_openshift</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>src/main/resources/templates/openshift</directory>
+      <outputDirectory>openshift</outputDirectory>
+    </fileSet>
      <fileSet>
       <directory>src/test/resources/snippets/datamodel</directory>
       <outputDirectory>datamodel</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/test/resources/openshift/example-config-simple-showcase</directory>
+      <outputDirectory>example-config-simple-showcase</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>src/test/resources/cmd</directory>
