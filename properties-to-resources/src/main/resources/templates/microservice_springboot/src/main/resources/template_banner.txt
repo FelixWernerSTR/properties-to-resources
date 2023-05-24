@@ -1,0 +1,1 @@
+${AnsiColor.BRIGHT_BLUE}:: [=mavenproject.artifactId] :: Running Spring Boot ${spring-boot.version} ::

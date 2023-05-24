@@ -6,8 +6,20 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
+      <directory>src/main/resources/templates/openshift</directory>
+      <outputDirectory>openshift</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>src/main/resources/templates/snippets_maven_openshift</directory>
       <outputDirectory>snippets_maven_openshift</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources/templates/microservice_springboot</directory>
+      <outputDirectory>microservice_springboot</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources/templates/microservice_quarkus</directory>
+      <outputDirectory>microservice_quarkus</outputDirectory>
     </fileSet>
      <fileSet>
       <directory>src/test/resources/openshift/example-config</directory>

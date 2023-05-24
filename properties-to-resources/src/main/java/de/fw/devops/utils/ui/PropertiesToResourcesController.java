@@ -34,6 +34,8 @@ public class PropertiesToResourcesController {
     dataModelPropertiesFolders.add("example-config-simple-showcase/myApp-dev.properties");
     propertiesToResourcesPanel.setComboBox(dataModelPropertiesFolders, propertiesToResourcesPanel.getDataModelPropertiesComboBox());
     templatesFolders.add("snippets_maven_openshift");
+    templatesFolders.add("microservice_springboot");
+    templatesFolders.add("microservice_quarkus");
     templatesFolders.add("openshift");
     propertiesToResourcesPanel.setComboBox(templatesFolders, propertiesToResourcesPanel.getTemplatesComboBox());
     outputFolders.add("target");

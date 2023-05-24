@@ -21,7 +21,7 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
 /**
- * erzeugt beliebige Artefakte für Pojos aus DataModel(Map<String, Object>) oder StringList(java.util.List<String>) nach targetPath für existierende Templates
+ * erzeugt beliebige Artefakte fuer Pojos aus DataModel(Map<String, Object>) oder StringList(java.util.List<String>) nach targetPath fuer existierende Templates
  * in templatePath.
  * 
  * Siehe Methoden: generate(...)
@@ -29,7 +29,7 @@ import freemarker.template.TemplateExceptionHandler;
  * Info zur Templateerstellung: https://freemarker.apache.org/
  * 
  * 
- * @author Felix Werner
+ * @author N0009271
  *
  */
 public class FreemarkerTemplateProcessor {
@@ -76,7 +76,7 @@ public class FreemarkerTemplateProcessor {
     try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName(StandardCharsets.UTF_8.toString()))) {
       freemarkerTemplate.process(dataModel, writer);
     } catch (IOException | TemplateException e) {
-      logger.error("exception occured : {0}", e);
+      logger.error("exception occured : {}", e);
       throw new RuntimeException(e);
     }
   }
@@ -100,7 +100,9 @@ public class FreemarkerTemplateProcessor {
     try {
       return freemarkerConfiguration.getTemplate(templateFile);
     } catch (IOException e) {
-      logger.warn("exception occured : {0}", e);
+    	e.printStackTrace();
+      logger.warn("with configuration: {} ",this);
+      logger.warn("exception occured : {}", e);
       logger.warn("generation of artifact not possible!");
       throw new RuntimeException();
     }
@@ -111,7 +113,7 @@ public class FreemarkerTemplateProcessor {
    */
   protected void init() {
     /* Create and adjust the configuration singleton */
-    freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_31);
+    freemarkerConfiguration = new Configuration(Configuration.VERSION_2_3_32);
     try {
       freemarkerConfiguration.setDirectoryForTemplateLoading(templatePath.toFile());
       freemarkerConfiguration.setDefaultEncoding(StandardCharsets.UTF_8.toString());
@@ -119,6 +121,7 @@ public class FreemarkerTemplateProcessor {
       freemarkerConfiguration.setLogTemplateExceptions(true);
       freemarkerConfiguration.setWrapUncheckedExceptions(true);
       freemarkerConfiguration.setInterpolationSyntax(interpolationSyntax);
+      logger.debug("with configuration: {} ",this);
     } catch (IOException e) {
       logger.error("error loading file {})", templatePath);
       throw new RuntimeException(e);
@@ -131,6 +134,7 @@ public class FreemarkerTemplateProcessor {
    */
   public FreemarkerTemplateProcessor templatePath(Path path) {
     templatePath = path;
+    init();
     return this;
   }
   
@@ -150,6 +154,20 @@ public class FreemarkerTemplateProcessor {
   public FreemarkerTemplateProcessor interpolationSyntax(int interpolationSyntax) {
     this.interpolationSyntax = interpolationSyntax;
     return this;
+  }
+
+  public Path getTemplatePath() {
+	return templatePath;
+  }
+
+  public Path getTargetPath() {
+	return targetPath;
+  }
+
+  @Override
+  public String toString() {
+	return "FreemarkerTemplateProcessor [freemarkerConfiguration=" + freemarkerConfiguration + ", templatePath="
+				+ templatePath + ", targetPath=" + targetPath + ", interpolationSyntax=" + interpolationSyntax + "]";
   }
   
 }
