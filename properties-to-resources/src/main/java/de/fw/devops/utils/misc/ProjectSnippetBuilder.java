@@ -20,9 +20,9 @@ import de.fw.devops.utils.AbstractArtifactBuilder;
 public class ProjectSnippetBuilder extends AbstractArtifactBuilder {
   
   private static Logger logger = LogManager.getLogger(ProjectSnippetBuilder.class);
-  private static Pattern searchPatternDev = Pattern.compile("(.*)-(ew|ft)(.properties)");
-  private static Pattern searchPatternPatch = Pattern.compile("(.*)-(bt|ep|pt|rt|st|vt)(.properties)");
-  private static Pattern searchPatternProd = Pattern.compile("(.*)-(et|sc|pr)(.properties)");
+  private static Pattern searchPatternDev = Pattern.compile("(.*)-(dev)(.properties)");
+  private static Pattern searchPatternPatch = Pattern.compile("(.*)-(preprod)(.properties)");
+  private static Pattern searchPatternProd = Pattern.compile("(.*)-(prod)(.properties)");
   private MavenProject mavenProject = new MavenProject();
   
   /**

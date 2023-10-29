@@ -27,10 +27,10 @@ public class ProjectSnippetBuilderTest {
     ProjectSnippetBuilder //
         .fromProperties("src/test/resources/snippets/datamodel/project.properties")// hier für ein Project-Model
         .templatePath("src/main/resources/templates/snippets_maven_openshift") //
-        .targetPath("target/1") //
+        .targetPath("target/maven_openshift1") //
         .processProperties();
     
-    assertThat(new String(Files.readAllBytes(Paths.get("target/1/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
+    assertThat(new String(Files.readAllBytes(Paths.get("target/maven_openshift1/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
   }
   
   /**
@@ -41,11 +41,11 @@ public class ProjectSnippetBuilderTest {
   public void testProcessProjectPropertiesDir() throws IOException {
     
     ProjectSnippetBuilder //
-        .fromProperties("src/test/resources/snippets/datamodel").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target/2") //
+        .fromProperties("src/test/resources/snippets/datamodel").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target/maven_openshift2") //
         .process();
     
-    assertThat(new String(Files.readAllBytes(Paths.get("target/2/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
-    assertThat(new String(Files.readAllBytes(Paths.get("target/2/snippets/myApp2/pom.xml")))).doesNotContain("[=mavenproject.name]");
+    assertThat(new String(Files.readAllBytes(Paths.get("target/maven_openshift2/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
+    assertThat(new String(Files.readAllBytes(Paths.get("target/maven_openshift2/snippets/myApp2/pom.xml")))).doesNotContain("[=mavenproject.name]");
 
   }
   
@@ -58,11 +58,11 @@ public class ProjectSnippetBuilderTest {
     
     AbstractArtifactBuilder artifactBuilder = (AbstractArtifactBuilder) PropertiesToPojosParseUtil.createObject("de.fw.devops.utils.misc.ProjectSnippetBuilder");
     
-    artifactBuilder.properties("src/test/resources/snippets/datamodel").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target/3")
+    artifactBuilder.properties("src/test/resources/snippets/datamodel").templatePath("src/main/resources/templates/snippets_maven_openshift").targetPath("target/maven_openshift3")
         .process();
     
-    assertThat(new String(Files.readAllBytes(Paths.get("target/3/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
-    assertThat(new String(Files.readAllBytes(Paths.get("target/3/snippets/myApp2/pom.xml")))).doesNotContain("[=mavenproject.name]");
+    assertThat(new String(Files.readAllBytes(Paths.get("target/maven_openshift3/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
+    assertThat(new String(Files.readAllBytes(Paths.get("target/maven_openshift3/snippets/myApp2/pom.xml")))).doesNotContain("[=mavenproject.name]");
     
   }
   

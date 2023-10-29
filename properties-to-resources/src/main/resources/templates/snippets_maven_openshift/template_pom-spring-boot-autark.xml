@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
-	<!-- ein pom-Template mit Maven-Profilen für eine Springboot-Anwendung. Kann aber auch für eine War-Anwendung angepasst werden -->
-	
+
+	<!-- ein pom-Template mit Maven-Profilen für eine Springboot-Anwendung. 
+		Kann aber auch für eine War-Anwendung angepasst werden -->
+
 	<!-- "build-images": baut das Docker-Image und pusht nach Nexus -->
 	<!-- "yaml-build": erzeugt yamls für OpenShift -->
 	<!-- "yaml-upload": bringt diese yamls nach Nexus -->
-	<!-- "yaml-oc-apply": führt diese yamls auf Jenkins gegen OpenShift aus-->
+	<!-- "yaml-oc-apply": führt diese yamls auf Jenkins gegen OpenShift aus -->
 
 	<artifactId>[=mavenproject.name]</artifactId>
 	<packaging>jar</packaging>
@@ -17,165 +19,172 @@
 	<name>[=mavenproject.name]</name>
 
 	<properties>
-    <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
-    <!-- for jib configuration -->
-    <sendCredentialsOverHttp>true</sendCredentialsOverHttp>
-    <jib-maven-plugin.allowInsecureRegistries>true</jib-maven-plugin.allowInsecureRegistries>
-    <base.docker.image>${nexus.registry.url}/eclipse-temurin:11.0.17_8-jdk</base.docker.image>
-    <maven.settings.serverId>central-proxy</maven.settings.serverId>
-    <!-- nexus-iq-scan Konfiguration -->
-    <!-- https://help.sonatype.com/integrations/nexus-iq-cli -->
-    <!-- zusätzliche Konfiguration in: nexus-iq-scan.properties -->
-    <!-- Argument: stage, Given: "'stage", Choices: "develop", "build", "stage-release", "release" -->
-    <nexus.iq.scan.stage>build</nexus.iq.scan.stage>
-    <nexus.iq.scan.scanPatternJarWar>target/${artifactId}-${project.version}.jar</nexus.iq.scan.scanPatternJarWar>
+		<exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+		<!-- for jib configuration -->
+		<sendCredentialsOverHttp>true</sendCredentialsOverHttp>
+		<jib-maven-plugin.allowInsecureRegistries>true</jib-maven-plugin.allowInsecureRegistries>
+		<base.docker.image>${nexus.registry.url}/eclipse-temurin:11.0.17_8-jdk</base.docker.image>
+		<maven.settings.serverId>central-proxy</maven.settings.serverId>
+		<!-- nexus-iq-scan Konfiguration -->
+		<!-- https://help.sonatype.com/integrations/nexus-iq-cli -->
+		<!-- zusätzliche Konfiguration in: nexus-iq-scan.properties -->
+		<!-- Argument: stage, Given: "'stage", Choices: "develop", "build", "stage-release", 
+			"release" -->
+		<nexus.iq.scan.stage>build</nexus.iq.scan.stage>
+		<nexus.iq.scan.scanPatternJarWar>target/${artifactId}-${project.version}.jar</nexus.iq.scan.scanPatternJarWar>
 
-    <yaml-oc-apply.executableScript>${project.artifactId}-applyAllScripts.sh</yaml-oc-apply.executableScript>
-    <yaml-oc-apply.yamlPathEW>${yaml.upload.nexus.fromDirBase}/svi-ew/${project.artifactId}</yaml-oc-apply.yamlPathEW>
+		<yaml-oc-apply.executableScript>${project.artifactId}-applyAllScripts.sh</yaml-oc-apply.executableScript>
+		<yaml-oc-apply.yamlPathEW>${yaml.upload.nexus.fromDirBase}/svi-ew/${project.artifactId}</yaml-oc-apply.yamlPathEW>
 	</properties>
 
 	<profiles>
-    <profile>
-    <id>build-images</id>
-    <build>
-      <plugins>
-        <plugin>
-          <groupId>com.google.cloud.tools</groupId>
-          <artifactId>jib-maven-plugin</artifactId>
-          <version>${jib-maven-plugin.version}</version>
-          <executions>
-            <execution>
-             <phase>verify</phase>
-              <goals>
-                <goal>build</goal>
-              </goals>
-                <configuration>
-                  <allowInsecureRegistries>${jib-maven-plugin.allowInsecureRegistries}</allowInsecureRegistries>
-                  <serverId>${maven.settings.serverId}</serverId>
-                  <from>
-                    <image>${base.docker.image}</image>
-                    <auth>
-                      <username>${nexus.registry.username}</username>
-                      <password>${nexus.registry.password}</password>
-                    </auth>
-                  </from>
-                  <to>
-                    <image>${nexus.registry.url}/[=mavenproject.name]:${project.version}-${BUILD_NUMBER}</image> <!-- BUILD_NUMBER kommt vom Jenkins, Bau auf Workstation normalerweise nicht nötig. Beim Bau für Testzwecke, bitte  BUILD_NUMBER per set BUILD_NUMBER=x setzen-->
-                    <tags>
-                      <tag>${project.version}-${BUILD_NUMBER}</tag>
-                      <tag>latest</tag>
-                    </tags>
-                    <auth>
-                      <username>${nexus.registry.username}</username>
-                      <password>${nexus.registry.password}</password>
-                    </auth>
-                  </to>
-		              <extraDirectories>
-		                <paths>
-		                  <path>
-		                    <from>target</from>
-		                    <into>/</into>
-		                    <includes>[=mavenproject.artifactId]:${project.version}.jar</includes>
-		                  </path>
-<!-- 		                  <path> so ist der Start ca. 20% schneller
-							<from>${basedir}/target/${project.artifactId}-${project.version}</from>
-							<into>/${project.artifactId}</into>
-						  </path> -->
-		                </paths>
-		              </extraDirectories>
-		              <container>
-		                <entrypoint>
-		                  <arg>sh</arg>
-		                  <arg>-c</arg> <!-- die JVM-Parameter in OpenShift sollten über Env-Variable 'JAVA_TOOL_OPTIONS' reinkommen z.B: JAVA_TOOL_OPTIONS: -Dserver.port=${deployment.containerPort} -Dproject.version.buildnumber=${sys:project.version}-${env:BUILD_NUMBER} -Djava.security.egd=file:/dev/./urandom -Dlog4j2.formatMsgNoLookups=true -->
-		                  <arg>java -jar [=mavenproject.artifactId]:${project.version}.jar</arg>
-		                  <!-- so ist der Start ca. 20% schneller -->
-		                  <!-- <arg>java ${JAVA_OPTS} -noverify -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom -cp /[=mavenproject.artifactId]/WEB-INF/classes:/[=mavenproject.artifactId]/WEB-INF/lib/* "[=mavenproject.groupId].[=mavenproject.artifactId]App"</arg> -->
-		                </entrypoint>
-		              </container>
-		            </configuration>
-             </execution>                    
-           </executions>
-         </plugin>
-       </plugins>
-     </build>
-    </profile>
-	<profile>
+		<profile>
+			<id>build-images</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.google.cloud.tools</groupId>
+						<artifactId>jib-maven-plugin</artifactId>
+						<version>${jib-maven-plugin.version}</version>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>build</goal>
+								</goals>
+								<configuration>
+									<allowInsecureRegistries>${jib-maven-plugin.allowInsecureRegistries}</allowInsecureRegistries>
+									<serverId>${maven.settings.serverId}</serverId>
+									<from>
+										<image>${base.docker.image}</image>
+										<auth>
+											<username>${nexus.registry.username}</username>
+											<password>${nexus.registry.password}</password>
+										</auth>
+									</from>
+									<to>
+										<image>${nexus.registry.url}/[=mavenproject.name]:${project.version}-${BUILD_NUMBER}</image> <!-- BUILD_NUMBER kommt vom Jenkins, Bau auf Workstation normalerweise nicht 
+											nötig. Beim Bau für Testzwecke, bitte BUILD_NUMBER per set BUILD_NUMBER=x 
+											setzen -->
+										<tags>
+											<tag>${project.version}-${BUILD_NUMBER}</tag>
+											<tag>latest</tag>
+										</tags>
+										<auth>
+											<username>${nexus.registry.username}</username>
+											<password>${nexus.registry.password}</password>
+										</auth>
+									</to>
+									<extraDirectories>
+										<paths>
+											<path>
+												<from>target</from>
+												<into>/</into>
+												<includes>[=mavenproject.artifactId]:${project.version}.jar</includes>
+											</path>
+											<!-- <path> so ist der Start ca. 20% schneller <from>${basedir}/target/${project.artifactId}-${project.version}</from> 
+												<into>/${project.artifactId}</into> </path> -->
+										</paths>
+									</extraDirectories>
+									<container>
+										<entrypoint>
+											<arg>sh</arg>
+											<arg>-c</arg> <!-- die JVM-Parameter in OpenShift sollten über Env-Variable 'JAVA_TOOL_OPTIONS' 
+												reinkommen z.B: JAVA_TOOL_OPTIONS: -Dserver.port=${deployment.containerPort} 
+												-Dproject.version.buildnumber=${sys:project.version}-${env:BUILD_NUMBER} 
+												-Djava.security.egd=file:/dev/./urandom -Dlog4j2.formatMsgNoLookups=true -->
+											<arg>java -jar
+												[=mavenproject.artifactId]:${project.version}.jar</arg>
+											<!-- so ist der Start ca. 20% schneller -->
+											<!-- <arg>java ${JAVA_OPTS} -noverify -XX:+AlwaysPreTouch -Djava.security.egd=file:/dev/./urandom 
+												-cp /[=mavenproject.artifactId]/WEB-INF/classes:/[=mavenproject.artifactId]/WEB-INF/lib/* 
+												"[=mavenproject.groupId].[=mavenproject.artifactId]App"</arg> -->
+										</entrypoint>
+									</container>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
 			<id>yaml-build</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
 			<build>
-        <plugins>
-          <plugin>
-            <groupId>de.fw.maven.plugins</groupId>
-            <artifactId>properties-to-resources-maven-plugin</artifactId>
-            <version>1.1.0</version>
-            <executions>
-              <execution>
-                <id>build yaml with yaml-openshift-maven-plugin</id>
-                <goals>
-                  <goal>build</goal>
-                </goals>
-                <configuration>
-                  <sourceDir>${basedir}/src/main/resources/openshift/dev</sourceDir>
-                  <templateDir>${basedir}/src/main/resources/openshift/templates</templateDir>
-                  <targetDir>${basedir}/target/openshift/dev</targetDir>                       
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
+				<plugins>
+					<plugin>
+						<groupId>de.fw.maven.plugins</groupId>
+						<artifactId>properties-to-resources-maven-plugin</artifactId>
+						<version>1.1.0</version>
+						<executions>
+							<execution>
+								<id>build yaml with yaml-openshift-maven-plugin</id>
+								<goals>
+									<goal>build</goal>
+								</goals>
+								<configuration>
+									<sourceDir>${basedir}/src/main/resources/openshift/dev</sourceDir>
+									<templateDir>${basedir}/src/main/resources/openshift/templates</templateDir>
+									<targetDir>${basedir}/target/openshift/dev</targetDir>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
 			</build>
 		</profile>
-	    <profile>
-	      <id>yaml-oc-apply</id>
-	      <activation>
-	        <activeByDefault>false</activeByDefault>
-	      </activation>
-	      <build>
-	         <plugins>
-	            <plugin>
-	              <groupId>org.codehaus.mojo</groupId>
-	              <artifactId>exec-maven-plugin</artifactId>
-	              <version>${exec-maven-plugin.version}</version>
-	              <executions>
-	                <execution>
-	                  <id>executing: chmod 775 ${yaml-oc-apply.yamlPathEW}</id>
-	                  <phase>package</phase>
-	                  <goals>
-	                    <goal>exec</goal>
-	                  </goals>
-	                  <configuration>
-	                    <skip>${skip.chmod.on.windows}</skip>
-	                    <executable>chmod</executable>
-	                    <workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
-	                    <arguments>
-	                      <argument>-R</argument>
-	                      <argument>775</argument>
-	                      <argument>${yaml-oc-apply.yamlPathEW}</argument>
-	                    </arguments>
-	                  </configuration>
-	                </execution>
-	                <execution>
-	                  <id>executing yaml to svi-ew-svis</id>
-	                  <phase>package</phase>
-	                  <goals>
-	                    <goal>java</goal>
-	                  </goals>
-	                  <configuration>
-	                    <mainClass>de.svi.devops.utils.openshift.OcApplyFileExecutor</mainClass>
-	                    <workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
-	                    <arguments>
-	                      <argument>${yaml-oc-apply.yamlPathEW}/${yaml-oc-apply.executableScript}</argument>
-	                      <argument>${yaml-oc-apply.yamlPathEW}</argument>
-	                    </arguments>
-	                  </configuration>
-	                </execution>
-	              </executions>
-	            </plugin>
-	         </plugins>
-	      </build>
-	    </profile>
+		<profile>
+			<id>yaml-oc-apply</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>${exec-maven-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>executing: chmod 775 ${yaml-oc-apply.yamlPathEW}</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<skip>${skip.chmod.on.windows}</skip>
+									<executable>chmod</executable>
+									<workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
+									<arguments>
+										<argument>-R</argument>
+										<argument>775</argument>
+										<argument>${yaml-oc-apply.yamlPathEW}</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							<execution>
+								<id>executing yaml to svi-ew-svis</id>
+								<phase>package</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+								<configuration>
+									<mainClass>de.svi.devops.utils.openshift.OcApplyFileExecutor</mainClass>
+									<workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
+									<arguments>
+										<argument>${yaml-oc-apply.yamlPathEW}/${yaml-oc-apply.executableScript}</argument>
+										<argument>${yaml-oc-apply.yamlPathEW}</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 	<dependencies>
