@@ -1,4 +1,4 @@
-package [=mavenproject.groupId].web.rest;
+package [=mavenproject.groupId].web.rest.monitoring;
 
 import [=mavenproject.groupId].security.AuthoritiesConstants;
 import [=mavenproject.groupId].web.rest.vm.LoggerVM;
@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response;
 @Path("/management/loggers")
 @Produces(MediaType.APPLICATION_JSON)
 @RequestScoped
-public class [=mavenproject.entityName]ManagerLoggersEndpoint {
+public class ManagementLoggersResource {
 
     @GET
     @RolesAllowed(AuthoritiesConstants.ADMIN)

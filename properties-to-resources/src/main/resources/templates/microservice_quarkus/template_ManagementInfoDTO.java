@@ -3,7 +3,7 @@ package [=mavenproject.groupId].service.dto;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.util.ArrayList;
 import java.util.List;
-import javax.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbProperty;
 
 /**
  *  DTO to emulate /management/info response

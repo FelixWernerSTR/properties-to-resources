@@ -23,10 +23,10 @@ public class MicroserviceSpringbootSnippetBuilderTest {
 		  MicroserviceSpringbootSnippetBuilder //
 	        .fromProperties("src/test/resources/snippets/datamodel/project.properties")// hier fuer ein Project-Model
 	        .templatePath("src/main/resources/templates/microservice_springboot") //
-	        .targetPath("target/4") //
+	        .targetPath("target/springboot1") //
 	        .processProperties();
 	    
-	    assertThat(new String(Files.readAllBytes(Paths.get("target/4/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
+	    assertThat(new String(Files.readAllBytes(Paths.get("target/springboot1/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
 	  }
 
 }

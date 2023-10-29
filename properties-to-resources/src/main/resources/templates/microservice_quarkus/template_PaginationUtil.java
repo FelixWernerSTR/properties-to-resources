@@ -2,9 +2,9 @@ package [=mavenproject.groupId].web.util;
 
 import [=mavenproject.groupId].service.Paged;
 import java.util.ArrayList;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.Link;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 
 public final class PaginationUtil {
 

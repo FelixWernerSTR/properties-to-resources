@@ -12,8 +12,13 @@ import org.apache.logging.log4j.Logger;
 import de.fw.devops.utils.AbstractArtifactBuilder;
 
 /**
+ * Funktionsweise:
+ * Iteriert im Template-Verzeichnis-Baum und verarbeitet alle Templates("template_x"). 
+ * In der Hook-Methode: resolveNameForRessource wird der Zielname der Resource "berechnet"
+ * In der Hook-Methode: addPrefixPathForResource wird der Prefix-Pfad der Resource "berechnet"
  * 
- * @author N0009271
+ * 
+ * @author Felix Werner
  */
 public class MicroserviceQuarkusSnippetBuilder extends AbstractArtifactBuilder {
   
@@ -129,14 +134,17 @@ public class MicroserviceQuarkusSnippetBuilder extends AbstractArtifactBuilder {
     if (templateName.equals("template_ErrorConstants.java")) {
         return "ErrorConstants.java";
     }
-    if (templateName.equals("template_EntityManageConfigurationEndpoint.java")) {
-    	 return mavenProject.getEntityName()+"ManageConfigurationEndpoint.java";
+    if (templateName.equals("template_ManagementConfigurationResource.java")) {
+    	 return "ManagementConfigurationResource.java";
     }
     if (templateName.equals("template_EntityResource.java")) {
    	 return mavenProject.getEntityName()+"Resource.java";
     }
-    if (templateName.equals("template_EntityManagerLoggersEndpoint.java")) {
-   	 return mavenProject.getEntityName()+"ManagerLoggersEndpoint.java";
+    if (templateName.equals("template_ManagementLoggersResource.java")) {
+   	 return "ManagementLoggersResource.java";
+    }
+    if (templateName.equals("template_compile-quarkus-dev.launch")) {
+      	 return mavenProject.getArtifactId().toLowerCase()+"-compile-quarkus-dev.launch";
     }
 
     
@@ -168,17 +176,32 @@ public class MicroserviceQuarkusSnippetBuilder extends AbstractArtifactBuilder {
       if (!Files.exists(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/service/dto"))) {
           Files.createDirectories(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/service/dto"));
       }
+      if (!Files.exists(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/service/monitoring"))) {
+          Files.createDirectories(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/service/monitoring"));
+      }
       if (!Files.exists(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/errors"))) {
           Files.createDirectories(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/errors"));
       }
       if (!Files.exists(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/vm"))) {
           Files.createDirectories(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/vm"));
       }
+      if (!Files.exists(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/monitoring"))) {
+          Files.createDirectories(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/monitoring"));
+      }
+      if (!Files.exists(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/security"))) {
+          Files.createDirectories(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/security"));
+      }
       if (!Files.exists(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/web/util"))) {
           Files.createDirectories(Paths.get(targetPath + "/src/main/java/"+toPath(mavenProject.getGroupId())+"/web/util"));
       }
       if (!Files.exists(Paths.get(targetPath + "/src/test/java/"+toPath(mavenProject.getGroupId())+"/web/rest"))) {
           Files.createDirectories(Paths.get(targetPath + "/src/test/java/"+toPath(mavenProject.getGroupId())+"/web/rest"));
+      }
+      if (!Files.exists(Paths.get(targetPath + "/src/test/java/"+toPath(mavenProject.getGroupId())+"/web/rest/monitoring"))) {
+          Files.createDirectories(Paths.get(targetPath + "/src/test/java/"+toPath(mavenProject.getGroupId())+"/web/rest/monitoring"));
+      }
+      if (!Files.exists(Paths.get(targetPath + "/src/test/java/"+toPath(mavenProject.getGroupId())+"/web/rest/security"))) {
+          Files.createDirectories(Paths.get(targetPath + "/src/test/java/"+toPath(mavenProject.getGroupId())+"/web/rest/security"));
       }
       if (!Files.exists(Paths.get(targetPath + "/src/test/java/"+toPath(mavenProject.getGroupId())+"/config/mock"))) {
           Files.createDirectories(Paths.get(targetPath + "/src/test/java/"+toPath(mavenProject.getGroupId())+"/config/mock"));
@@ -200,7 +223,7 @@ public class MicroserviceQuarkusSnippetBuilder extends AbstractArtifactBuilder {
         return "src/test/java/"+toPath(mavenProject.getGroupId())+"/config/" + resourcePath;
     }
     if (resourcePath.equals("ManagementInfoResourceTest.java")) {
-        return "src/test/java/"+toPath(mavenProject.getGroupId())+"/web/rest/" + resourcePath;
+        return "src/test/java/"+toPath(mavenProject.getGroupId())+"/web/rest/monitoring/" + resourcePath;
     }
     if (resourcePath.equals(mavenProject.getEntityName()+"ResourceIT.java")) {
         return "src/test/java/"+toPath(mavenProject.getGroupId())+"/web/rest/" + resourcePath;
@@ -240,7 +263,7 @@ public class MicroserviceQuarkusSnippetBuilder extends AbstractArtifactBuilder {
         return "src/main/java/"+toPath(mavenProject.getGroupId())+"/service/dto/" + resourcePath;
     }
     if (resourcePath.endsWith("ManagementInfoService.java")) {
-        return "src/main/java/"+toPath(mavenProject.getGroupId())+"/service/" + resourcePath;
+        return "src/main/java/"+toPath(mavenProject.getGroupId())+"/service/monitoring/" + resourcePath;
     }
     if (resourcePath.endsWith("Paged.java")) {
         return "src/main/java/"+toPath(mavenProject.getGroupId())+"/service/" + resourcePath;
@@ -251,10 +274,15 @@ public class MicroserviceQuarkusSnippetBuilder extends AbstractArtifactBuilder {
     if (resourcePath.endsWith("ErrorConstants.java")) {
         return "src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/errors/" + resourcePath;
     }
-    if (resourcePath.endsWith("AccountResource.java") || resourcePath.endsWith("ManagementInfoResource.java") ||
-    		resourcePath.endsWith("ManageConfigurationEndpoint.java") || resourcePath.endsWith("ManagerLoggersEndpoint.java") || 
-    		resourcePath.endsWith("Resource.java")) {
+    if (resourcePath.endsWith(mavenProject.getEntityName()+"Resource.java")) {
         return "src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/" + resourcePath;
+    }
+    if (resourcePath.endsWith("ManagementInfoResource.java") ||
+    		resourcePath.endsWith("ManagementConfigurationResource.java") || resourcePath.endsWith("ManagementLoggersResource.java")) {
+        return "src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/monitoring/" + resourcePath;
+    }
+    if (resourcePath.endsWith("AccountResource.java")) {
+        return "src/main/java/"+toPath(mavenProject.getGroupId())+"/web/rest/security/" + resourcePath;
     }
     
     Matcher matcher = configJavaClasses.matcher(resourcePath);

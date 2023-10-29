@@ -1,10 +1,10 @@
-package [=mavenproject.groupId].web.rest;
+package [=mavenproject.groupId].web.rest.security;
 
 import io.quarkus.security.Authenticated;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -5,9 +5,9 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.json.bind.annotation.JsonbTransient;
-import javax.persistence.*;
-import javax.validation.constraints.*;
+import jakarta.json.bind.annotation.JsonbTransient;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 /**
  * not an ignored comment

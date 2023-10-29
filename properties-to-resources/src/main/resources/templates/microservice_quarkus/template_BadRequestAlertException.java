@@ -2,8 +2,8 @@ package [=mavenproject.groupId].web.rest.errors;
 
 import com.tietoevry.quarkus.resteasy.problem.HttpProblem;
 import java.net.URI;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 public class BadRequestAlertException extends HttpProblem {

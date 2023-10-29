@@ -2,8 +2,8 @@ package [=mavenproject.groupId].config;
 
 import io.quarkus.jsonb.JsonbConfigCustomizer;
 import java.util.Locale;
-import javax.inject.Singleton;
-import javax.json.bind.JsonbConfig;
+import jakarta.inject.Singleton;
+import jakarta.json.bind.JsonbConfig;
 
 /**
  * Jsonb Configuration

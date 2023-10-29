@@ -2,7 +2,7 @@ package [=mavenproject.groupId].web.rest.vm;
 
 import io.quarkus.panache.common.Sort;
 import java.util.List;
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.QueryParam;
 
 public class SortRequestVM {
 

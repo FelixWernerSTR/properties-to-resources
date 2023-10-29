@@ -5,14 +5,21 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.fw.devops.utils.AbstractArtifactBuilder;
 
+
 /**
  * 
- * @author N0009271
+ * Funktionsweise:
+ * Iteriert im Template-Verzeichnis-Baum und verarbeitet alle Templates("template_x"). 
+ * In der Hook-Methode: resolveNameForRessource wird der Zielname der Resource "berechnet"
+ * In der Hook-Methode: addPrefixPathForResource wird der Prefix-Pfad der Resource "berechnet"
+ * 
+ * @author Felix Werner
  */
 public class MicroserviceSpringbootSnippetBuilder extends AbstractArtifactBuilder {
   
@@ -111,6 +118,9 @@ public class MicroserviceSpringbootSnippetBuilder extends AbstractArtifactBuilde
     if (templateName.equals("template_application-testprod.properties")) {
         return "application-testprod.properties";
     }
+    if (templateName.equals("template_springboot-run.launch")) {
+     	 return mavenProject.getArtifactId().toLowerCase()+"-springboot-run.launch";
+   }
     
     Matcher matcher = templateConfigJavaClasses.matcher(templateName);
     if (matcher.find()) {

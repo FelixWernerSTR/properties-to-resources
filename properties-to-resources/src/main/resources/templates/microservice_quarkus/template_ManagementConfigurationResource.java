@@ -1,4 +1,4 @@
-package [=mavenproject.groupId].web.rest;
+package [=mavenproject.groupId].web.rest.monitoring;
 
 import [=mavenproject.groupId].security.AuthoritiesConstants;
 import [=mavenproject.groupId].web.rest.vm.ConfigPropsVM;
@@ -19,7 +19,7 @@ import org.eclipse.microprofile.config.spi.ConfigSource;
 @Path("/management")
 @Produces(MediaType.APPLICATION_JSON)
 @RequestScoped
-public class [=mavenproject.entityName]ManageConfigurationEndpoint {
+public class ManagementConfigurationResource {
 
     @GET
     @Path("/configprops")

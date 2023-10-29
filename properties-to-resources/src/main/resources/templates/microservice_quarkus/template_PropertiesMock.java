@@ -3,9 +3,9 @@ package [=mavenproject.groupId].config.mock;
 import [=mavenproject.groupId].config.[=mavenproject.entityName]Properties;
 import io.quarkus.test.Mock;
 import io.smallrye.config.SmallRyeConfig;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.Config;
 import org.mockito.Mockito;
 

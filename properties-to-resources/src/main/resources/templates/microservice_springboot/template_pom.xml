@@ -8,7 +8,7 @@
     <parent>
 		<groupId>de.svi</groupId>
 		<artifactId>SVIApplication</artifactId>
-		<version>5.2.2</version>
+		<version>5.2.9</version>
 	</parent>
 
     <groupId>[=mavenproject.groupId]</groupId>
@@ -36,11 +36,20 @@
         <start-class>[=mavenproject.groupId].[=mavenproject.artifactId]App</start-class>
         <argLine>-Djava.security.egd=file:/dev/./urandom -Xmx1G</argLine>
         <!-- Dependency versions -->
-        <spring-boot.version>2.7.11</spring-boot.version>
-        <spring-framework.version>5.3.27</spring-framework.version>
-        <spring-security.version>5.7.8</spring-security.version>
-        <jackson.version>2.14.2</jackson.version>
+        <spring-boot.version>2.7.13</spring-boot.version>
+        <spring-framework.version>5.3.29</spring-framework.version>
+        <spring-security.version>5.8.5</spring-security.version>
+        <jackson.version>2.15.2</jackson.version>
         <archunit-junit5.version>0.22.0</archunit-junit5.version>
+        
+		<!-- jib-maven-plugin -->
+		<server.servlet.context-path>/${project.artifactId}</server.servlet.context-path>
+		<app.docker.image>${project.name}</app.docker.image>
+		<jib.maven.plugin.skip.default.execution.springboot>false</jib.maven.plugin.skip.default.execution.springboot>
+
+		<yaml-oc-apply.executableScript>/${project.name}-applyAllScripts.sh</yaml-oc-apply.executableScript>
+		<yaml-oc-apply.yamlPathEW>${de.svi.devops.utils.OpenShiftDeploymentBuilder.targetDir}/svi-ew/${project.name}</yaml-oc-apply.yamlPathEW>
+		
     </properties>
 
     <dependencyManagement>
@@ -508,7 +517,7 @@
         </profile>
         
 		<profile>
-			<id>embedded-tomcat</id> <!-- http://localhost:8082/SVIS3GWebHealthCheck -->
+			<id>embedded-tomcat</id> <!-- http://localhost:8082/${project.build.finalName} -->
 			<build>
 				<plugins>
 					<plugin>
@@ -518,7 +527,7 @@
 					<plugin> <!-- embedded tomcat starten, war deployen -->
 						<groupId>org.codehaus.cargo</groupId>
 						<artifactId>cargo-maven3-plugin</artifactId>
-						<version>1.10.6</version>
+						<version>1.10.9</version>
 						<executions>
 							<execution>
 								<id>start-container</id>
@@ -556,6 +565,79 @@
 				</plugins>
 			</build>
 		</profile>
-        <!-- jhipster-needle-maven-add-profile -->
+        <profile>
+			<id>build-images</id> <!-- in SVIApplication konfiguriert -->
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.google.cloud.tools</groupId>
+						<artifactId>jib-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+        <profile>
+			<id>yaml-build</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>de.svi.maven.plugins</groupId>
+						<artifactId>yaml-openshift-maven-plugin</artifactId>
+						<version>2.2.5</version>
+						 <executions>
+			              <execution>
+			                 <id>build yaml with yaml-openshift-maven-plugin</id>
+			                  <goals>
+			                   <goal>build</goal>
+			                  </goals>
+								<configuration>
+									<sourceDir>${de.svi.devops.utils.OpenShiftDeploymentBuilder.sourceDir}</sourceDir>
+									<targetDir>${de.svi.devops.utils.OpenShiftDeploymentBuilder.targetDir}</targetDir>
+									<uploadToNexus>${yaml.upload.nexus.uploadToNexus}</uploadToNexus>
+								</configuration>
+			                </execution>
+			             </executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>yaml-oc-apply</id> <!-- vorausgesetzt yaml-build wurde ausgeführt und oc.exe ist in PATH! -->
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>executing yaml to svi-ew-svis</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>java</goal>
+								</goals>
+								<configuration>
+									<mainClass>de.svi.devops.utils.openshift.OcApplyFileExecutor</mainClass>
+									<workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
+									<arguments>
+										<argument>${yaml-oc-apply.yamlPathEW}/${yaml-oc-apply.executableScript}</argument>
+										<argument>${yaml-oc-apply.yamlPathEW}</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<dependencies>
+				<dependency>
+					<groupId>de.svi.devops</groupId>
+					<artifactId>properties-to-resources</artifactId>
+					<version>2.2.5</version>
+				</dependency>			
+			</dependencies>
+		</profile>
     </profiles>
 </project>

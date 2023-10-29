@@ -3,7 +3,7 @@ package [=mavenproject.groupId].config;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.time.LocalDate;
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverter;
 import org.junit.jupiter.api.Test;
 
 class LocalDateProviderTest {

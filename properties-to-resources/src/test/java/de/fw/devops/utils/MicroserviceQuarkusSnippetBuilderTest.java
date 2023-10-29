@@ -23,10 +23,18 @@ public class MicroserviceQuarkusSnippetBuilderTest {
 		  MicroserviceQuarkusSnippetBuilder //
 	        .fromProperties("src/test/resources/snippets/datamodel/project.properties")// hier fuer ein Project-Model
 	        .templatePath("src/main/resources/templates/microservice_quarkus") //
-	        .targetPath("target/5") //
+	        .targetPath("target/quarkus1") //
 	        .processProperties();
 	    
-	    assertThat(new String(Files.readAllBytes(Paths.get("target/5/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
+	    assertThat(new String(Files.readAllBytes(Paths.get("target/quarkus1/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
+
+		  MicroserviceQuarkusSnippetBuilder //
+	        .fromProperties("src/test/resources/snippets/datamodel/project.properties")// hier fuer ein Project-Model
+	        .templatePath("src/main/resources/templates/microservice_quarkus_2x") //
+	        .targetPath("target/quarkus2") //
+	        .processProperties();
+	    
+	    assertThat(new String(Files.readAllBytes(Paths.get("target/quarkus2/snippets/myApp/pom.xml")))).doesNotContain("[=mavenproject.name]");
 
 	  }
 
