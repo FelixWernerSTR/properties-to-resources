@@ -10,7 +10,7 @@ export class I[=mavenproject.entityName] {
   buJN?: boolean | null;
 }
 
-export class Angebot implements I[=mavenproject.entityName] {
+export class [=mavenproject.entityName] implements I[=mavenproject.entityName] {
   constructor(
     public id?: number,
     public angebotsnummer?: number | null,
