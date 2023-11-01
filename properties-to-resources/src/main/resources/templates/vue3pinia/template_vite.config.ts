@@ -14,14 +14,14 @@ const __APP_INFO__ = {
 
 // https://vitejs.dev/config/
 export default ({ command, mode }: ConfigEnv): UserConfig => {
-  const { VITE_BASE_API_URL_[=mavenproject.artifactId?upper_case] } = loadEnv(mode, CWD);
+  const { VITE_BASE_API_URL_[=mavenproject.entityName?upper_case] } = loadEnv(mode, CWD);
 
   const isBuild = command === 'build';
 
   return {
   define: {
     __APP_INFO__: JSON.stringify(__APP_INFO__),
-    __VITE_BASE_API_URL_RISIKOLV__: JSON.stringify(VITE_BASE_API_URL_[=mavenproject.artifactId?upper_case]),
+    __VITE_BASE_API_URL_[=mavenproject.entityName?upper_case]__: JSON.stringify(VITE_BASE_API_URL_[=mavenproject.entityName?upper_case]),
   },
   plugins: [vue()],
   resolve: {
@@ -31,7 +31,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   },
   server: {//ACHTUNG! diese Ausgaben sind nur auf der vite-Konsole zu sehen!
     proxy: {
-      '/api/[=mavenproject.artifactId]': {
+      '/api/[=mavenproject.entityName?lower_case]': {
         target: 'http://localhost:8080',
         changeOrigin: true,
         configure: (proxy, _options) => {

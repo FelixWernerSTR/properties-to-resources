@@ -1,7 +1,6 @@
 import {defineStore} from "pinia";
 import [=mavenproject.entityName]Service from "@/services/[=mavenproject.entityName].service";
 import {type I[=mavenproject.entityName], [=mavenproject.entityName]} from "@/model/[=mavenproject.entityName].model";
-import type {UnwrapRef} from "vue";
 
 
 //gutes Beispiel wie man Pinia mit Typescript verwendet:

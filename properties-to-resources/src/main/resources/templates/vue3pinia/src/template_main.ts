@@ -4,7 +4,7 @@ import { createApp } from "vue";
 import { createPinia, storeToRefs } from "pinia";
 import App from "./App.vue";
 import router from "./router";
-import { useRisikolv } from "./stores/[=mavenproject.entityName]Store";
+import { use[=mavenproject.entityName] } from "./stores/[=mavenproject.entityName]Store";
 import axios from 'axios';
 
 import "./assets/main.css";

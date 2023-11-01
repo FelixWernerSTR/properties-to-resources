@@ -79,6 +79,9 @@ public class MicroserviceSpringbootSnippetBuilder extends AbstractArtifactBuilde
     if (templateName.equals("template_Resource.java")) {
         return mavenProject.getEntityName()+"Resource.java";
     }
+    if (templateName.equals("template_EntityPseudoPersistenceService.java")) {
+     	 return mavenProject.getEntityName()+"PseudoPersistenceService.java";
+    }
     if (templateName.equals("template_ResourceIT.java")) {
         return mavenProject.getEntityName()+"ResourceIT.java";
     }
@@ -168,6 +171,9 @@ public class MicroserviceSpringbootSnippetBuilder extends AbstractArtifactBuilde
         return "src/main/java/"+toPath(mavenProject.getGroupId())+"/domain/" + resourcePath;
     }
     if (resourcePath.endsWith(mavenProject.getEntityName()+"Service.java")) {
+        return "src/main/java/"+toPath(mavenProject.getGroupId())+"/service/" + resourcePath;
+    }
+    if (resourcePath.endsWith(mavenProject.getEntityName()+"PseudoPersistenceService.java")) {
         return "src/main/java/"+toPath(mavenProject.getGroupId())+"/service/" + resourcePath;
     }
     if (resourcePath.endsWith(mavenProject.getEntityName()+"Resource.java")) {

@@ -140,6 +140,9 @@ public class MicroserviceQuarkusSnippetBuilder extends AbstractArtifactBuilder {
     if (templateName.equals("template_EntityResource.java")) {
    	 return mavenProject.getEntityName()+"Resource.java";
     }
+    if (templateName.equals("template_EntityPseudoPersistenceService.java")) {
+      	 return mavenProject.getEntityName()+"PseudoPersistenceService.java";
+    }
     if (templateName.equals("template_ManagementLoggersResource.java")) {
    	 return "ManagementLoggersResource.java";
     }
@@ -245,6 +248,9 @@ public class MicroserviceQuarkusSnippetBuilder extends AbstractArtifactBuilder {
         return "src/main/java/"+toPath(mavenProject.getGroupId())+"/domain/" + resourcePath;
     }
     if (resourcePath.endsWith(mavenProject.getEntityName()+"Service.java")) {
+        return "src/main/java/"+toPath(mavenProject.getGroupId())+"/service/" + resourcePath;
+    }
+    if (resourcePath.endsWith(mavenProject.getEntityName()+"PseudoPersistenceService.java")) {
         return "src/main/java/"+toPath(mavenProject.getGroupId())+"/service/" + resourcePath;
     }
     if (resourcePath.endsWith(mavenProject.getEntityName()+"Resource.java")) {

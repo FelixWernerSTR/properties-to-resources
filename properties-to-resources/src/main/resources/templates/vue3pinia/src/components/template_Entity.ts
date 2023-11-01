@@ -20,7 +20,7 @@ export default defineComponent({
     }
 
     //https://runthatline.com/pinia-watch-state-getters-inside-vue-components/
-    watch([=mavenproject.entityName], () => {
+    watch([=mavenproject.entityName?lower_case], () => {
       console.log('[=mavenproject.entityName] ref changed, do something!')
       [=mavenproject.entityName?lower_case].schlagwort = [=mavenproject.entityName?lower_case].value.schlagwort;
     })

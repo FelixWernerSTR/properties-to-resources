@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { createPinia, storeToRefs } from "pinia";
 import { use[=mavenproject.entityName] } from "@/stores/[=mavenproject.entityName]Store";
-import { Partner } from "../model/[=mavenproject.entityName].model";
+import { [=mavenproject.entityName] } from "../model/[=mavenproject.entityName].model";
 
       
 const router = createRouter({
