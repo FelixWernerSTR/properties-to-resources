@@ -12,22 +12,9 @@
     <name>[=mavenproject.artifactId]</name>
 
 	<properties>
-		<node.version>v18.18.2</node.version>
+		<node.version>v20.10.0</node.version>
 		<!-- Plugin versions -->
 		<!-- Quelle: https://nodejs.org/dist/ , https://registry.npmjs.org/npm/-/npm-x.xx.xx.tgz -->
-		<!-- https://nexus.pr.sv.loc/repository/npm_IK1IK2_group/[MODULNAME]/-/[MODULNAME]-x.x.x.tgz -->
-		
-		<!-- jib -->
-        <app.docker.image>${project.name}</app.docker.image>
-        <jib.maven.plugin.skip.default.execution.tomcat>false</jib.maven.plugin.skip.default.execution.tomcat>
-        
-        <!-- yaml-build -->
-        <de.svi.devops.utils.OpenShiftDeploymentBuilder.sourceDir>${project.basedir}/openshift/dev</de.svi.devops.utils.OpenShiftDeploymentBuilder.sourceDir>
-        <de.svi.devops.utils.OpenShiftDeploymentBuilder.targetDir>${project.build.directory}/openshift</de.svi.devops.utils.OpenShiftDeploymentBuilder.targetDir>
-        
- 		<yaml-oc-apply.executableScript>${project.name}-applyAllScripts.sh</yaml-oc-apply.executableScript>
-        <yaml-oc-apply.yamlPathEW>${yaml.upload.nexus.fromDirBase}/svi-ew/${project.name}</yaml-oc-apply.yamlPathEW>
-
 		<!--mvn fr.jcgay.maven.plugins:buildplan-maven-plugin:1.3:list -->
 	</properties>
 
@@ -124,7 +111,7 @@
 							<wait>false</wait>
 							<!-- Container configuration -->
 							<container>
-								<containerId>tomcat8x</containerId>
+								<containerId>tomcat9x</containerId>
 								<type>embedded</type>
 								<timeout>10000</timeout>
 								<systemProperties>
@@ -133,7 +120,7 @@
 							<!-- Configuration to use with the Container -->
 							<configuration>
 								<type>standalone</type>
-								<home>${project.build.directory}/tomcat8x</home>
+								<home>${project.build.directory}/tomcat9x</home>
 								<properties>
 									<cargo.servlet.port>8082</cargo.servlet.port>
 								</properties>
@@ -147,103 +134,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-        <profile>
-			<id>build-images</id> <!-- in SVIApplication konfiguriert -->
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.google.cloud.tools</groupId>
-						<artifactId>jib-maven-plugin</artifactId>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-        <profile>
-			<id>yaml-build</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>de.svi.maven.plugins</groupId>
-						<artifactId>yaml-openshift-maven-plugin</artifactId>
-						<version>${yaml-openshift-maven-plugin.version}</version>
-						 <executions>
-			              <execution>
-			                 <id>build yaml with yaml-openshift-maven-plugin</id>
-			                  <goals>
-			                   <goal>build</goal>
-			                  </goals>
-								<configuration>
-									<sourceDir>${de.svi.devops.utils.OpenShiftDeploymentBuilder.sourceDir}</sourceDir>
-									<targetDir>${de.svi.devops.utils.OpenShiftDeploymentBuilder.targetDir}</targetDir>
-									<uploadToNexus>${yaml.upload.nexus.uploadToNexus}</uploadToNexus>
-								</configuration>
-			                </execution>
-			             </executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>yaml-oc-apply</id> <!-- vorausgesetzt yaml-build wurde ausgeführt und oc.exe ist in PATH! -->
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>executing yaml to svi-ew-svis</id>
-								<phase>install</phase>
-								<goals>
-									<goal>java</goal>
-								</goals>
-								<configuration>
-									<mainClass>de.svi.devops.utils.openshift.OcApplyFileExecutor</mainClass>
-									<workingDirectory>${yaml-oc-apply.yamlPathEW}</workingDirectory>
-									<arguments>
-										<argument>${yaml-oc-apply.yamlPathEW}/${yaml-oc-apply.executableScript}</argument>
-										<argument>${yaml-oc-apply.yamlPathEW}</argument>
-									</arguments>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin> <!-- stellt sicher ob die Ausführung von ${yaml-oc-apply.yamlPathEW}/${yaml-oc-apply.executableScript} erfolgreich war! -->
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-enforcer-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>enforce-${yaml-oc-apply.yamlPathEW}/${yaml-oc-apply.executableScript}-success.log-exists</id>
-								<goals>
-									<goal>enforce</goal>
-								</goals>
-								<phase>install</phase>
-								<configuration>
-									<rules>
-										<requireFilesExist>
-											<files>
-												<file>${yaml-oc-apply.yamlPathEW}/${yaml-oc-apply.executableScript}-success.log</file>
-											</files>
-										</requireFilesExist>
-									</rules>
-									<fail>true</fail>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-			<dependencies>
-				<dependency>
-					<groupId>de.svi.devops</groupId>
-					<artifactId>properties-to-resources</artifactId>
-					<version>${yaml-openshift-maven-plugin.version}</version>
-				</dependency>			
-			</dependencies>
 		</profile>
 	</profiles>
 </project>

@@ -36,6 +36,8 @@ public class PropertiesToResourcesController {
     templatesFolders.add("snippets_maven_openshift");
     templatesFolders.add("microservice_springboot");
     templatesFolders.add("microservice_quarkus");
+    templatesFolders.add("microservice_quarkus_2x");
+    templatesFolders.add("vue3pinia");
     templatesFolders.add("openshift");
     propertiesToResourcesPanel.setComboBox(templatesFolders, propertiesToResourcesPanel.getTemplatesComboBox());
     outputFolders.add("target");

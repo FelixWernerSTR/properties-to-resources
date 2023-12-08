@@ -30,6 +30,14 @@
       <outputDirectory>microservice_quarkus</outputDirectory>
     </fileSet>
     <fileSet>
+      <directory>src/main/resources/templates/microservice_quarkus_2x</directory>
+      <outputDirectory>microservice_quarkus_2x</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources/templates/vue3pinia</directory>
+      <outputDirectory>vue3pinia</outputDirectory>
+    </fileSet>
+    <fileSet>
       <directory>src/main/resources/templates/openshift</directory>
       <outputDirectory>openshift</outputDirectory>
     </fileSet>
