@@ -113,7 +113,7 @@ public abstract class AbstractArtifactBuilder extends SimpleFileVisitor<Path>{
     } else if (Files.exists(propertiesPath) && !Files.isDirectory(propertiesPath)) {
       processProperties();
     } else {
-      logger.error("propertiesPath exists: {}", Files.exists(propertiesPath));
+      logger.error("propertiesPath: '{}' exists: {}", propertiesPath, Files.exists(propertiesPath));
     }
   }
   

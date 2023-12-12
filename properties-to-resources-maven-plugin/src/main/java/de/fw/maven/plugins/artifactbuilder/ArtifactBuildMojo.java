@@ -22,7 +22,7 @@ import de.fw.devops.utils.PropertiesToPojosParseUtil;
 /**
  * wraps functionality of properties-to-resources as maven-plugin
  */
-@Mojo(name = "build", defaultPhase = LifecyclePhase.VALIDATE)
+@Mojo(name = "build", defaultPhase = LifecyclePhase.INITIALIZE)
 public class ArtifactBuildMojo extends AbstractMojo {
   
   @Parameter(property = "sourceDir", required = true)
@@ -85,7 +85,7 @@ public class ArtifactBuildMojo extends AbstractMojo {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append("YamlBuildMojo [sourceDir=");
+    builder.append("ArtifactBuildMojo [sourceDir=");
     builder.append(sourceDir);
     builder.append(", templateDir=");
     builder.append(templateDir);
