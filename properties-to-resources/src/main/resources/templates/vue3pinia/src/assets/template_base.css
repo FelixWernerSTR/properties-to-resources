@@ -101,41 +101,7 @@
   font-weight: normal;
 }
 
-@font-face {
-  font-family: "SparkasseLight";
-  src: url("./fonts/Sparkasse_web_Lt.eot") format("embedded-opentype"),
-    url("./fonts/Sparkasse_web_Lt.woff") format("woff"),
-    url("./fonts/Sparkasse_web_Lt.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: "SparkasseRegular";
-  src: url("./fonts/Sparkasse_web_Rg.eot?") format("embedded-opentype"),
-    url("./fonts/Sparkasse_web_Rg.woff") format("woff"),
-    url("./fonts/Sparkasse_web_Rg.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Pictos-IF";
-  src: url("./fonts/pictos-if.eot?#iebug") format("embedded-opentype"),
-    url("./fonts/pictos-if.woff") format("woff"),
-    url("./fonts/pictos-if.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "SV-Icons";
-  src: url("./fonts/sv_icons.eot?#iebug") format("embedded-opentype"),
-    url("./fonts/sv_icons.woff") format("woff"),
-    url("./fonts/sv_icons.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
 
 body {
   min-height: 100vh;

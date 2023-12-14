@@ -14,7 +14,7 @@ const [=mavenproject.entityName?lower_case]Service = new [=mavenproject.entityNa
 export const use[=mavenproject.entityName] = defineStore("[=mavenproject.entityName]", {
   state: (): State => ({
     [=mavenproject.entityName?lower_case]: new [=mavenproject.entityName](),
-    isDebug: false,
+    is[=mavenproject.entityName]Valid: true,
   }),
 
   getters: {
@@ -25,36 +25,46 @@ export const use[=mavenproject.entityName] = defineStore("[=mavenproject.entityN
 
   actions: {
     get[=mavenproject.entityName]forId(id: number): Promise<void> {
-      console.log("retrieve[=mavenproject.entityName] by pinia action!");
+      console.debug("retrieve[=mavenproject.entityName] by pinia action!");
       [=mavenproject.entityName?lower_case]Service
         .find(id)
         .then((res) => {
-          console.log("retrieve[=mavenproject.entityName] res:", res.id);
+          console.debug("retrieve[=mavenproject.entityName] res:", res.id);
           this.[=mavenproject.entityName?lower_case] = res;
         })
         .catch((error) => {
           //alertService().showHttpError(this, error.response);
-          console.log("retrieve[=mavenproject.entityName] fehlgeschlagen!", error);
+          console.debug("retrieve[=mavenproject.entityName] fehlgeschlagen!", error);
         });
     },
-    init(): Promise<void> {
-      console.log("init: create empty [=mavenproject.entityName]!");
-      this.[=mavenproject.entityName?lower_case] = new [=mavenproject.entityName]();
+    
+    setIs[=mavenproject.entityName]Valid(valid:boolean): Promise<boolean> {
+      this.is[=mavenproject.entityName]Valid = valid;
+      return this.is[=mavenproject.entityName]Valid;
+    },
+    
+    setIsRequestLoading(loading:boolean): Promise<boolean> {
+      this.isRequestLoading = loading;
+      return this.isRequestLoading;
+    },
+    
+    getIsRequestLoading() : Promise<boolean>{
+      return this.isRequestLoading;
     },
 
     async save[=mavenproject.entityName](): Promise<void> {
       await this.setIsRequestLoading(true);
-      console.log("save[=mavenproject.entityName] by pinia action!",  this.[=mavenproject.entityName?lower_case].value);
-      console.log("save[=mavenproject.entityName] this.isRequestLoading: ", this.isRequestLoading);
+      console.debug("save[=mavenproject.entityName] by pinia action!",  this.[=mavenproject.entityName?lower_case]);
+      console.debug("save[=mavenproject.entityName] this.isRequestLoading: ", this.isRequestLoading);
             await [=mavenproject.entityName?lower_case]Service
             .save(this.[=mavenproject.entityName?lower_case])
             .then((res) => {
-              console.log("save[=mavenproject.entityName] res:", res.id);
+              console.debug("save[=mavenproject.entityName] res:", res.id);
               this.[=mavenproject.entityName?lower_case] = res;
             })
             .catch((error) => {
               //alertService().showHttpError(this, error.response);
-              console.log("save[=mavenproject.entityName] fehlgeschlagen!", error);
+              console.debug("save[=mavenproject.entityName] fehlgeschlagen!", error);
             });
         await this.setIsRequestLoading(false);
     },
