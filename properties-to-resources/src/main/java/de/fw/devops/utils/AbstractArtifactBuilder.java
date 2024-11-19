@@ -152,12 +152,20 @@ public abstract class AbstractArtifactBuilder extends SimpleFileVisitor<Path>{
     return Paths.get(String.join(File.separator, notNullAndBlank));
   }
   
+  private Map<String, Object> dataModel;
   
   /**
    * @return Map<String, Object>
    */
   public Map<String, Object> getDataModel() {
-    return pojoPropertiesParseUtil.getDataModel();
+    if(this.dataModel==null) {
+      this.dataModel = pojoPropertiesParseUtil.getDataModel();
+    }
+    return this.dataModel;
+  }
+  
+  public void setDataModel(Map<String, Object> dataModel) {
+    this.dataModel = dataModel;
   }
   
   /**
@@ -207,8 +215,21 @@ public abstract class AbstractArtifactBuilder extends SimpleFileVisitor<Path>{
                 if (!Files.exists(Paths.get(targetPath+ File.separator +prefixForTarget.getParent()))) {
                     Files.createDirectories(Paths.get(targetPath+ File.separator +prefixForTarget.getParent()));
                 }
-                generator.generate(getDataModel(), template.getFileName().toString(),
-                		prefixForTarget.getParent()+ File.separator +resolveNameForRessource(template.getFileName().toString()));
+                String previousResourceName = "";
+                String currentResourceName = resolveNameForRessource(template.getFileName().toString());
+                
+                // ueberspringen, wenn der erste Aufruf einen leeren String liefert
+                if (currentResourceName == null || currentResourceName.isEmpty()) {
+                  logger.debug("currentResourceName is empty or null.");
+                }else {
+                  while (!currentResourceName.equals(previousResourceName)) {
+                    previousResourceName = currentResourceName;
+                    generator.generate(getDataModel(), template.getFileName().toString(),
+                        prefixForTarget.getParent()+ File.separator +currentResourceName);
+                    currentResourceName = resolveNameForRessource(template.getFileName().toString());
+                  }
+                }
+                
             }else{
             	if(!templatePath.equals(generator.getTemplatePath())) {
             		generator.templatePath(templatePath);
